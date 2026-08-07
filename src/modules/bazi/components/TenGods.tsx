@@ -1,6 +1,7 @@
 import React from 'react'
 import { Card } from '../../../components/common'
-import { GAN_WUXING, ZHI_WUXING, getWuXingBg } from '../utils/constants'
+import { getWuXingBg } from '../utils/constants'
+import { GAN_WUXING } from '../../../utils/wuxing'
 import type { TenGodRelation, TianGan, WuXing } from '../../../types'
 
 interface TenGodsProps {
@@ -38,7 +39,7 @@ const TenGods: React.FC<TenGodsProps> = ({ tenGods, hiddenStems }) => {
               const key = stemKeys[i]
               const hides = hiddenStems[key]
               const ganWx: WuXing = god?.tianGan ? GAN_WUXING[god.tianGan] : '土'
-              const zhiWx: WuXing = god?.tianGan ? ZHI_WUXING[god.tianGan] : '土'
+              const zhiWx: WuXing = god?.tianGan ? GAN_WUXING[god.tianGan] : '土'
               
               return (
                 <tr key={pos} className="border-b border-gold/5">

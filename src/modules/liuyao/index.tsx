@@ -15,31 +15,27 @@ const LiuyaoModule: React.FC = () => {
 
   const handleManualResult = useCallback((yaos: { type: '阳' | '阴'; isMoving: boolean }[], question: string) => {
     setLoading(true)
-    setTimeout(() => {
-      const liuyaoResult = calculateLiuyaoManual(
-        yaos.map((y, i) => ({
-          position: i + 1,
-          type: y.type,
-          isMoving: y.isMoving,
-          text: '',
-          explain: '',
-        })),
-        question || undefined
-      )
-      setResult(liuyaoResult)
-      if (liuyaoResult) setLiuyaoResult(liuyaoResult)
-      setLoading(false)
-    }, 300)
+    const liuyaoResult = calculateLiuyaoManual(
+      yaos.map((y, i) => ({
+        position: i + 1,
+        type: y.type,
+        isMoving: y.isMoving,
+        text: '',
+        explain: '',
+      })),
+      question || undefined
+    )
+    setResult(liuyaoResult)
+    if (liuyaoResult) setLiuyaoResult(liuyaoResult)
+    setLoading(false)
   }, [setLiuyaoResult])
 
   const handleTimeResult = useCallback((question: string) => {
     setLoading(true)
-    setTimeout(() => {
-      const liuyaoResult = calculateLiuyaoByTime(question || undefined)
-      setResult(liuyaoResult)
-      if (liuyaoResult) setLiuyaoResult(liuyaoResult)
-      setLoading(false)
-    }, 300)
+    const liuyaoResult = calculateLiuyaoByTime(question || undefined)
+    setResult(liuyaoResult)
+    if (liuyaoResult) setLiuyaoResult(liuyaoResult)
+    setLoading(false)
   }, [setLiuyaoResult])
 
   return (

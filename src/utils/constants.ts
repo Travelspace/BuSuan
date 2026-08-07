@@ -11,30 +11,7 @@ export const TEN_GODS: TenGod[] = [
   '偏财', '正官', '七杀', '正印', '偏印'
 ]
 
-export const TIAN_GAN_WU_XING: Record<TianGan, WuXing> = {
-  '甲': '木', '乙': '木',
-  '丙': '火', '丁': '火',
-  '戊': '土', '己': '土',
-  '庚': '金', '辛': '金',
-  '壬': '水', '癸': '水',
-}
-
-export const DI_ZHI_WU_XING: Record<DiZhi, WuXing> = {
-  '子': '水', '丑': '土',
-  '寅': '木', '卯': '木',
-  '辰': '土', '巳': '火',
-  '午': '火', '未': '土',
-  '申': '金', '酉': '金',
-  '戌': '土', '亥': '水',
-}
-
-export const WU_XING_SHENG: Record<WuXing, WuXing> = {
-  '金': '水', '水': '木', '木': '火', '火': '土', '土': '金',
-}
-
-export const WU_XING_KE: Record<WuXing, WuXing> = {
-  '金': '木', '木': '土', '土': '水', '水': '火', '火': '金',
-}
+export { GAN_WUXING as TIAN_GAN_WU_XING, ZHI_WUXING as DI_ZHI_WU_XING, WU_XING_SHENG, WU_XING_KE } from './wuxing'
 
 export const NA_YIN: Record<string, string> = {
   '甲子': '海中金', '乙丑': '海中金', '丙寅': '炉中火', '丁卯': '炉中火',
@@ -54,28 +31,8 @@ export const NA_YIN: Record<string, string> = {
   '庚申': '石榴木', '辛酉': '石榴木', '壬戌': '大海水', '癸亥': '大海水',
 }
 
-export const MODULE_NAMES: Record<string, string> = {
-  'profile': '信息填写',
-  'bazi': '八字排盘',
-  'ziwei': '紫微斗数',
-  'fortune': '运势分析',
-  'name': '姓名测试',
-  'calendar': '择吉日',
-  'liuyao': '六爻测算',
-}
+export { MODULE_NAMES, MODULE_DESCRIPTIONS } from '../locales/zh-CN'
 
-export const MODULE_DESCRIPTIONS: Record<string, string> = {
-  'profile': '录入个人信息，各功能模块自动读取',
-  'bazi': '基于出生时间计算八字四柱命盘',
-  'ziwei': '排布紫微斗数十二宫命盘',
-  'fortune': '查看流年运势与人生趋势',
-  'name': '分析姓名五格数理与八字匹配',
-  'calendar': '查询黄历宜忌与吉日推荐',
-  'liuyao': '传统六爻占卜与解卦分析',
-}
-
-export const JI_XIONG_LEVELS = ['大吉', '吉', '半吉', '凶', '大凶'] as const
-
-export const FORTUNE_LEVELS = ['大吉', '吉', '平', '凶', '大凶'] as const
+export { FORTUNE_LEVELS, JI_XIONG_LEVELS, LEVEL_COLORS, LEVEL_SCORE } from './jixiong'
 
 export const NAME_SCORE_LEVELS = ['优秀', '良好', '一般', '较差', '极差'] as const

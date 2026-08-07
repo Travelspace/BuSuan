@@ -61,6 +61,15 @@ const BaziRecommend: React.FC<BaziRecommendProps> = ({ monthData }) => {
                   {day.baziRelation?.chongDesc && (
                     <div className="text-fire text-xs mt-0.5">{day.baziRelation.chongDesc}</div>
                   )}
+                  {day.baziRelation?.xingDesc && (
+                    <div className="text-fire text-xs mt-0.5">{day.baziRelation.xingDesc}</div>
+                  )}
+                  {day.baziRelation?.haiDesc && (
+                    <div className="text-fire text-xs mt-0.5">{day.baziRelation.haiDesc}</div>
+                  )}
+                  {day.baziRelation?.ziXingDesc && (
+                    <div className="text-fire text-xs mt-0.5">{day.baziRelation.ziXingDesc}</div>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">

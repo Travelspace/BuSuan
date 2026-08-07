@@ -13,14 +13,17 @@ const NameModule: React.FC = () => {
   const { baziResult } = useAppStore()
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<NameResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = useCallback((name: string) => {
     setLoading(true)
-    setTimeout(() => {
-      const nameResult = calculateName(name, baziResult)
-      setResult(nameResult)
-      setLoading(false)
-    }, 300)
+    setError(null)
+    const nameResult = calculateName(name, baziResult)
+    if (!nameResult) {
+      setError('姓名中包含无法识别笔画的字符，请检查后重新输入')
+    }
+    setResult(nameResult)
+    setLoading(false)
   }, [baziResult])
 
   return (
@@ -48,7 +51,16 @@ const NameModule: React.FC = () => {
           </div>
         )}
 
-        {!result && (
+        {error && !result && (
+          <div className="lg:col-span-2 flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="text-6xl mb-4 opacity-20 text-fire">!</div>
+              <p className="text-fire text-lg">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {!result && !error && (
           <div className="lg:col-span-2 flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <div className="text-6xl mb-4 opacity-20">名</div>

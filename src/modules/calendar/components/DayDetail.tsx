@@ -115,6 +115,15 @@ const DayDetail: React.FC<DayDetailProps> = ({ day, isOpen, onClose }) => {
             {day.baziRelation.chongDesc && (
               <div className="text-fire text-xs mb-1">相冲：{day.baziRelation.chongDesc}</div>
             )}
+            {day.baziRelation.xingDesc && (
+              <div className="text-fire text-xs mb-1">相刑：{day.baziRelation.xingDesc}</div>
+            )}
+            {day.baziRelation.haiDesc && (
+              <div className="text-fire text-xs mb-1">相害：{day.baziRelation.haiDesc}</div>
+            )}
+            {day.baziRelation.ziXingDesc && (
+              <div className="text-fire text-xs mb-1">自刑：{day.baziRelation.ziXingDesc}</div>
+            )}
             <div className="text-text-secondary text-xs mt-2">{day.baziRelation.suggestion}</div>
           </div>
         )}

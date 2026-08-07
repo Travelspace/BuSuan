@@ -20,6 +20,7 @@ const NameForm: React.FC<NameFormProps> = ({ onSubmit, loading, hasBazi }) => {
 
   const chars = [...name]
   const charStrokes = chars.map(c => ({ char: c, stroke: getStrokeCount(c) }))
+  const hasUnknownStroke = charStrokes.some(cs => cs.stroke === null)
 
   return (
     <Card hover={false}>
@@ -45,10 +46,15 @@ const NameForm: React.FC<NameFormProps> = ({ onSubmit, loading, hasBazi }) => {
               {charStrokes.map((cs, i) => (
                 <div key={i} className="text-center">
                   <div className="text-text-primary text-lg font-serif">{cs.char}</div>
-                  <div className="text-gold text-sm">{cs.stroke}画</div>
+                  <div className={`text-sm ${cs.stroke === null ? 'text-fire' : 'text-gold'}`}>
+                    {cs.stroke === null ? '未知' : `${cs.stroke}画`}
+                  </div>
                 </div>
               ))}
             </div>
+            {hasUnknownStroke && (
+              <p className="text-fire text-xs mt-2">存在无法识别笔画的字符，测试结果可能不准确</p>
+            )}
           </div>
         )}
 
@@ -67,7 +73,7 @@ const NameForm: React.FC<NameFormProps> = ({ onSubmit, loading, hasBazi }) => {
         <Button
           type="submit"
           loading={loading}
-          disabled={name.trim().length < 2}
+          disabled={name.trim().length < 2 || hasUnknownStroke}
           className="w-full"
         >
           开始姓名测试

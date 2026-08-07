@@ -1,6 +1,7 @@
 import React from 'react'
 import { Card } from '../../../components/common'
 import { LEVEL_COLORS } from '../utils/constants'
+import { FORTUNE } from '../../../locales/zh-CN'
 import type { YearFortune } from '../utils/calculation'
 
 interface KeyYearsProps {
@@ -14,7 +15,7 @@ const KeyYears: React.FC<KeyYearsProps> = ({ fortunes }) => {
 
   return (
     <Card hover={false}>
-      <h3 className="text-xl font-serif text-gold mb-4">关键年份提醒</h3>
+      <h3 className="text-xl font-serif text-gold mb-4">{FORTUNE.keyYearsTitle}</h3>
 
       <div className="space-y-3">
         {keyFortunes.map((f) => {

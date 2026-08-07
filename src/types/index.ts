@@ -17,6 +17,7 @@ export type TenGod =
   | '七杀' 
   | '正印' 
   | '偏印'
+  | '日主'
 
 export type Gender = 'male' | 'female'
 

@@ -1,6 +1,5 @@
-import { astro } from 'iztro'
-import type { BirthInfo, WuXing, TianGan } from '../../../types'
-import type { ZiweiPalaceData } from '../../ziwei/utils/calculation'
+import type { BirthInfo } from '../../../types'
+import type { ZiweiPalaceData, ZiweiCalcResult } from '../../ziwei/utils/calculation'
 
 export interface PalaceFortune {
   name: string
@@ -88,12 +87,6 @@ function getLevel(score: number): PalaceFortune['level'] {
   return '平'
 }
 
-function getTimeIndex(hour: number, minute: number): number {
-  if (hour === 0 && minute === 0) return 0
-  if (hour === 23 && minute >= 30) return 12
-  return Math.floor((hour + 1) / 2)
-}
-
 function calculatePalaceScore(palace: ZiweiPalaceData): number {
   let score = 50
 
@@ -163,79 +156,27 @@ function generatePalaceAnalysis(
   }
 }
 
-export function calculateZiweiFortune(birthInfo: BirthInfo): ZiweiFortuneResult | null {
+export function calculateZiweiFortune(
+  ziweiResult: ZiweiCalcResult,
+  birthInfo: BirthInfo
+): ZiweiFortuneResult | null {
   if (!birthInfo.date) return null
 
   const date = new Date(birthInfo.date)
   const year = date.getFullYear()
-  const month = date.getMonth() + 1
-  const day = date.getDate()
-  const hour = date.getHours()
-  const minute = date.getMinutes()
-  const timeIndex = getTimeIndex(hour, minute)
-
-  const genderStr = birthInfo.gender === 'male' ? '男' : '女'
-  const dateStr = `${year}-${month}-${day}`
-
-  let astrolabe: any
-  try {
-    astrolabe = birthInfo.calendar === 'solar'
-      ? astro.bySolar(dateStr, timeIndex, genderStr, true, 'zh-CN')
-      : astro.byLunar(dateStr, timeIndex, genderStr, false, true, 'zh-CN')
-  } catch (e) {
-    console.error('紫微斗数排盘失败:', e)
-    return null
-  }
-
   const currentAge = new Date().getFullYear() - year
 
-  const palaces: ZiweiPalaceData[] = astrolabe.palaces.map((p: any) => ({
-    index: p.index,
-    name: p.name.endsWith('宫') ? p.name : p.name + '宫',
-    heavenlyStem: p.heavenlyStem,
-    earthlyBranch: p.earthlyBranch,
-    majorStars: p.majorStars.map((s: any) => s.name),
-    minorStars: p.minorStars.map((s: any) => s.name),
-    adjectiveStars: p.adjectiveStars?.map((s: any) => s.name) || [],
-    sihua: p.majorStars
-      .filter((s: any) => s.mutagen)
-      .map((s: any) => `${s.name}·${s.mutagen}`)
-      .concat(
-        p.minorStars
-          .filter((s: any) => s.mutagen)
-          .map((s: any) => `${s.name}·${s.mutagen}`)
-      ),
-    isBodyPalace: p.isBodyPalace,
-    decadal: p.decadal
-      ? {
-          range: p.decadal.range,
-          heavenlyStem: p.decadal.heavenlyStem,
-          earthlyBranch: p.decadal.earthlyBranch,
-        }
-      : { range: [0, 0] as [number, number], heavenlyStem: '', earthlyBranch: '' },
-    ages: p.ages || [],
-  }))
+  const palaces = ziweiResult.palaces
+
+  const palaceNameByIndex = (index: number) =>
+    palaces.find(p => p.index === index)?.name || ''
 
   const sihua = {
-    lu: { star: '', palace: -1, palaceName: '' },
-    quan: { star: '', palace: -1, palaceName: '' },
-    ke: { star: '', palace: -1, palaceName: '' },
-    ji: { star: '', palace: -1, palaceName: '' },
+    lu: { star: ziweiResult.sihua.lu.star, palace: ziweiResult.sihua.lu.palace, palaceName: palaceNameByIndex(ziweiResult.sihua.lu.palace) },
+    quan: { star: ziweiResult.sihua.quan.star, palace: ziweiResult.sihua.quan.palace, palaceName: palaceNameByIndex(ziweiResult.sihua.quan.palace) },
+    ke: { star: ziweiResult.sihua.ke.star, palace: ziweiResult.sihua.ke.palace, palaceName: palaceNameByIndex(ziweiResult.sihua.ke.palace) },
+    ji: { star: ziweiResult.sihua.ji.star, palace: ziweiResult.sihua.ji.palace, palaceName: palaceNameByIndex(ziweiResult.sihua.ji.palace) },
   }
-
-  const mutagenMap: Record<string, 'lu' | 'quan' | 'ke' | 'ji'> = {
-    '禄': 'lu', '权': 'quan', '科': 'ke', '忌': 'ji',
-  }
-
-  astrolabe.palaces.forEach((p: any) => {
-    const allStars = [...p.majorStars, ...p.minorStars]
-    allStars.forEach((s: any) => {
-      if (s.mutagen && mutagenMap[s.mutagen]) {
-        const key = mutagenMap[s.mutagen]
-        sihua[key] = { star: s.name, palace: p.index, palaceName: p.name.endsWith('宫') ? p.name : p.name + '宫' }
-      }
-    })
-  })
 
   let currentDecadal: ZiweiFortuneResult['currentDecadal'] = null
   for (const p of palaces) {
@@ -284,11 +225,11 @@ export function calculateZiweiFortune(birthInfo: BirthInfo): ZiweiFortuneResult 
 
   return {
     birthInfo,
-    soulStar: astrolabe.soul || '',
-    bodyStar: astrolabe.body || '',
-    fiveElementsClass: astrolabe.fiveElementsClass || '',
-    zodiac: astrolabe.zodiac || '',
-    sign: astrolabe.sign || '',
+    soulStar: ziweiResult.soul || '',
+    bodyStar: ziweiResult.body || '',
+    fiveElementsClass: ziweiResult.fiveElementsClass || '',
+    zodiac: ziweiResult.zodiac || '',
+    sign: ziweiResult.sign || '',
     palaces: palaceFortunes,
     sihua,
     currentDecadal,

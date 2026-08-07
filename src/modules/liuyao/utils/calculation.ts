@@ -1,16 +1,14 @@
 import type { LiuyaoResult, GuaInfo, YaoInfo } from '../../../types'
 import { TRIGRAM_DATA, getGuaKey, getGuaByKey, type GuaData } from '../data/guaData'
 import { TRIGRAM_WUXING } from './constants'
-
-const SHENG_MAP: Record<string, string> = { '金': '水', '水': '木', '木': '火', '火': '土', '土': '金' }
-const KE_MAP: Record<string, string> = { '金': '木', '木': '土', '土': '水', '水': '火', '火': '金' }
+import { WU_XING_SHENG, WU_XING_KE } from '../../../utils/wuxing'
 
 function getWuXingRelation(from: string, to: string): '生' | '克' | '比和' | '被生' | '被克' {
   if (from === to) return '比和'
-  if (SHENG_MAP[from] === to) return '生'
-  if (KE_MAP[from] === to) return '克'
-  if (SHENG_MAP[to] === from) return '被生'
-  if (KE_MAP[to] === from) return '被克'
+  if (WU_XING_SHENG[from as keyof typeof WU_XING_SHENG] === to) return '生'
+  if (WU_XING_KE[from as keyof typeof WU_XING_KE] === to) return '克'
+  if (WU_XING_SHENG[to as keyof typeof WU_XING_SHENG] === from) return '被生'
+  if (WU_XING_KE[to as keyof typeof WU_XING_KE] === from) return '被克'
   return '比和'
 }
 

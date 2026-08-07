@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { WuXing, TianGan, DiZhi } from '../types'
+import type { WuXing } from '../types'
 
 export const formatDate = (date: Date, format: string = 'YYYY-MM-DD'): string => {
   return dayjs(date).format(format)
@@ -38,46 +38,12 @@ export const getWuXingColor = (wuxing: WuXing): string => {
   return colorMap[wuxing]
 }
 
-export const tianGanWuXing = (tianGan: TianGan): WuXing => {
-  const map: Record<TianGan, WuXing> = {
-    '甲': '木', '乙': '木',
-    '丙': '火', '丁': '火',
-    '戊': '土', '己': '土',
-    '庚': '金', '辛': '金',
-    '壬': '水', '癸': '水',
-  }
-  return map[tianGan]
-}
+export { getWuXingByGan, getWuXingByZhi, wuXingRelation } from './wuxing'
 
-export const diZhiWuXing = (diZhi: DiZhi): WuXing => {
-  const map: Record<DiZhi, WuXing> = {
-    '子': '水', '丑': '土',
-    '寅': '木', '卯': '木',
-    '辰': '土', '巳': '火',
-    '午': '火', '未': '土',
-    '申': '金', '酉': '金',
-    '戌': '土', '亥': '水',
-  }
-  return map[diZhi]
-}
-
-export const wuXingRelation = (wx1: WuXing, wx2: WuXing): '生' | '克' | '比和' => {
-  if (wx1 === wx2) return '比和'
-  
-  const shengMap: Record<WuXing, WuXing> = {
-    '金': '水', '水': '木', '木': '火', '火': '土', '土': '金',
-  }
-  
-  if (shengMap[wx1] === wx2) return '生'
-  if (shengMap[wx2] === wx1) return '克'
-  
-  const keMap: Record<WuXing, WuXing> = {
-    '金': '木', '木': '土', '土': '水', '水': '火', '火': '金',
-  }
-  
-  if (keMap[wx1] === wx2) return '克'
-  
-  return '生'
+export const getTimeIndex = (hour: number, minute: number): number => {
+  if (hour === 0 && minute === 0) return 0
+  if (hour === 23 && minute >= 30) return 12
+  return Math.floor((hour + 1) / 2)
 }
 
 export const clamp = (value: number, min: number, max: number): number => {

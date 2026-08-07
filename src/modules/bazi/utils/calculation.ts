@@ -4,15 +4,16 @@ import type {
   Pillar, 
   HiddenStem, 
   TenGodRelation, 
+  TenGod,
   Dayun, 
   Liunian,
   WuXing,
   TianGan,
   DiZhi,
   Gender,
-  CalendarType,
   BirthInfo
 } from '../../../types'
+import { GAN_WUXING, ZHI_WUXING, WU_XING_SHENG, WU_XING_KE, getShengWo, getKeWo } from '../../../utils/wuxing'
 
 const HIDE_GAN_TYPE: Record<number, ('本气' | '中气' | '余气')[]> = {
   0: ['本气'],
@@ -20,24 +21,8 @@ const HIDE_GAN_TYPE: Record<number, ('本气' | '中气' | '余气')[]> = {
   2: ['本气', '中气', '余气'],
 }
 
-const GAN_WUXING: Record<string, WuXing> = {
-  '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土',
-  '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水',
-}
-
-const ZHI_WUXING: Record<string, WuXing> = {
-  '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土', '巳': '火',
-  '午': '火', '未': '土', '申': '金', '酉': '金', '戌': '土', '亥': '水',
-}
-
 const WUXING_COUNT_MAP: Record<WuXing, number> = {
   '金': 0, '木': 0, '水': 0, '火': 0, '土': 0,
-}
-
-function getTimeIndex(hour: number, minute: number): number {
-  if (hour === 0 && minute === 0) return 0
-  if (hour === 23 && minute >= 30) return 12
-  return Math.floor((hour + 1) / 2)
 }
 
 function getGenderNum(gender: Gender): number {
@@ -51,12 +36,12 @@ function countFiveElements(eightChar: EightChar): Record<WuXing, number> {
   const zhis = [eightChar.getYearZhi(), eightChar.getMonthZhi(), eightChar.getDayZhi(), eightChar.getTimeZhi()]
   
   gans.forEach(gan => {
-    const wx = GAN_WUXING[gan]
+    const wx = GAN_WUXING[gan as TianGan]
     if (wx) counts[wx] += 1
   })
   
   zhis.forEach(zhi => {
-    const wx = ZHI_WUXING[zhi]
+    const wx = ZHI_WUXING[zhi as DiZhi]
     if (wx) counts[wx] += 1
   })
   
@@ -69,12 +54,30 @@ function countFiveElements(eightChar: EightChar): Record<WuXing, number> {
   
   hideGans.forEach(hgList => {
     hgList.forEach(gan => {
-      const wx = GAN_WUXING[gan]
+      const wx = GAN_WUXING[gan as TianGan]
       if (wx) counts[wx] += 0.5
     })
   })
   
   return counts
+}
+
+function getTenGod(dayGan: TianGan, targetGan: TianGan): TenGod {
+  if (dayGan === targetGan) return '比肩'
+
+  const dayYinYang = '甲丙戊庚壬'.includes(dayGan)
+  const targetYinYang = '甲丙戊庚壬'.includes(targetGan)
+  const isSameYinYang = dayYinYang === targetYinYang
+
+  const dayWx = GAN_WUXING[dayGan]
+  const targetWx = GAN_WUXING[targetGan]
+
+  if (WU_XING_SHENG[dayWx] === targetWx) return isSameYinYang ? '食神' : '伤官'
+  if (WU_XING_KE[dayWx] === targetWx) return isSameYinYang ? '偏财' : '正财'
+  if (WU_XING_SHENG[targetWx] === dayWx) return isSameYinYang ? '偏印' : '正印'
+  if (WU_XING_KE[targetWx] === dayWx) return isSameYinYang ? '七杀' : '正官'
+
+  return isSameYinYang ? '比肩' : '劫财'
 }
 
 function getHiddenStems(hideGans: string[]): HiddenStem[] {
@@ -87,29 +90,26 @@ function getHiddenStems(hideGans: string[]): HiddenStem[] {
 }
 
 function getXiYongShen(eightChar: EightChar, fiveElements: Record<WuXing, number>): BaziResult['xiYongShen'] {
-  const dayGan = eightChar.getDayGan()
+  const dayGan = eightChar.getDayGan() as TianGan
   const dayWx = GAN_WUXING[dayGan]
   
-  const shengMap: Record<WuXing, WuXing> = { '金': '土', '木': '水', '水': '金', '火': '木', '土': '火' }
-  const keMap: Record<WuXing, WuXing> = { '金': '火', '木': '金', '水': '土', '火': '水', '土': '木' }
+  const motherWx = getShengWo(dayWx)
+  const keDayWx = getKeWo(dayWx)
   
-  const sorted = (Object.entries(fiveElements) as [WuXing, number][])
-    .sort((a, b) => b[1] - a[1])
-  
-  const isStrong = fiveElements[dayWx] >= 3 || fiveElements[shengMap[dayWx]] >= 2
+  const isStrong = fiveElements[dayWx] >= 3 || fiveElements[motherWx] >= 2
   
   let yongShen: WuXing
   let xiShen: WuXing[]
   let jiShen: WuXing[]
   
   if (isStrong) {
-    yongShen = keMap[dayWx]
-    xiShen = [shengMap[keMap[dayWx]], keMap[dayWx]]
-    jiShen = [dayWx, shengMap[dayWx]]
+    yongShen = keDayWx
+    xiShen = [getShengWo(keDayWx), keDayWx]
+    jiShen = [dayWx, motherWx]
   } else {
-    yongShen = shengMap[dayWx]
-    xiShen = [dayWx, shengMap[dayWx]]
-    jiShen = [keMap[dayWx], keMap[shengMap[dayWx]]]
+    yongShen = motherWx
+    xiShen = [dayWx, motherWx]
+    jiShen = [keDayWx, getKeWo(motherWx)]
   }
   
   return { yongShen, xiShen, jiShen }
@@ -124,8 +124,6 @@ export function calculateBazi(birthInfo: BirthInfo): BaziResult | null {
   const day = date.getDate()
   const hour = date.getHours()
   const minute = date.getMinutes()
-  const timeIndex = getTimeIndex(hour, minute)
-  
   let lunar: Lunar
   
   if (birthInfo.calendar === 'solar') {
@@ -160,11 +158,13 @@ export function calculateBazi(birthInfo: BirthInfo): BaziResult | null {
     } as Pillar,
   }
   
+  const dayGan = eightChar.getDayGan() as TianGan
+
   const tenGods: TenGodRelation[] = [
-    { position: '年干', tianGan: eightChar.getYearGan() as TianGan, tenGod: eightChar.getYearShiShenGan() as any },
-    { position: '月干', tianGan: eightChar.getMonthGan() as TianGan, tenGod: eightChar.getMonthShiShenGan() as any },
-    { position: '日干', tianGan: eightChar.getDayGan() as TianGan, tenGod: '日主' as any },
-    { position: '时干', tianGan: eightChar.getTimeGan() as TianGan, tenGod: eightChar.getTimeShiShenGan() as any },
+    { position: '年干', tianGan: eightChar.getYearGan() as TianGan, tenGod: getTenGod(dayGan, eightChar.getYearGan() as TianGan) },
+    { position: '月干', tianGan: eightChar.getMonthGan() as TianGan, tenGod: getTenGod(dayGan, eightChar.getMonthGan() as TianGan) },
+    { position: '日干', tianGan: dayGan, tenGod: '日主' },
+    { position: '时干', tianGan: eightChar.getTimeGan() as TianGan, tenGod: getTenGod(dayGan, eightChar.getTimeGan() as TianGan) },
   ]
   
   const fiveElements = countFiveElements(eightChar)
@@ -192,7 +192,7 @@ export function calculateBazi(birthInfo: BirthInfo): BaziResult | null {
     endAge: dy.getEndAge(),
     tianGan: dy.getGanZhi()[0] as TianGan,
     diZhi: dy.getGanZhi()[1] as DiZhi,
-    tenGod: '' as any,
+    tenGod: getTenGod(dayGan, dy.getGanZhi()[0] as TianGan),
   }))
   
   const currentYear = new Date().getFullYear()
@@ -202,11 +202,12 @@ export function calculateBazi(birthInfo: BirthInfo): BaziResult | null {
     const solar = Solar.fromYmd(y, 1, 1)
     const l = solar.getLunar()
     const ec = l.getEightChar()
+    const liunianGan = ec.getYearGan() as TianGan
     liunian.push({
       year: y,
-      tianGan: ec.getYearGan() as TianGan,
+      tianGan: liunianGan,
       diZhi: ec.getYearZhi() as DiZhi,
-      tenGod: ec.getYearShiShenGan() as any,
+      tenGod: getTenGod(dayGan, liunianGan),
     })
   }
   

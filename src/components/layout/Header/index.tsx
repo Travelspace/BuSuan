@@ -1,5 +1,5 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { 
   UserCircle, 
   Calendar, 
@@ -13,18 +13,29 @@ import { useAppStore } from '../../../store'
 import { MODULE_NAMES } from '../../../utils/constants'
 import type { ModuleType } from '../../../types'
 
+const NAV_ITEMS: { path: ModuleType; icon: React.ReactNode; label: string }[] = [
+  { path: 'profile', icon: <UserCircle size={20} />, label: MODULE_NAMES.profile },
+  { path: 'bazi', icon: <Hexagon size={20} />, label: MODULE_NAMES.bazi },
+  { path: 'ziwei', icon: <Sparkles size={20} />, label: MODULE_NAMES.ziwei },
+  { path: 'fortune', icon: <Compass size={20} />, label: MODULE_NAMES.fortune },
+  { path: 'name', icon: <User size={20} />, label: MODULE_NAMES.name },
+  { path: 'calendar', icon: <Calendar size={20} />, label: MODULE_NAMES.calendar },
+  { path: 'liuyao', icon: <Hash size={20} />, label: MODULE_NAMES.liuyao },
+]
+
 const Header: React.FC = () => {
   const { activeModule, setActiveModule } = useAppStore()
+  const location = useLocation()
 
-  const navItems: { path: ModuleType; icon: React.ReactNode; label: string }[] = [
-    { path: 'profile', icon: <UserCircle size={20} />, label: MODULE_NAMES.profile },
-    { path: 'bazi', icon: <Hexagon size={20} />, label: MODULE_NAMES.bazi },
-    { path: 'ziwei', icon: <Sparkles size={20} />, label: MODULE_NAMES.ziwei },
-    { path: 'fortune', icon: <Compass size={20} />, label: MODULE_NAMES.fortune },
-    { path: 'name', icon: <User size={20} />, label: MODULE_NAMES.name },
-    { path: 'calendar', icon: <Calendar size={20} />, label: MODULE_NAMES.calendar },
-    { path: 'liuyao', icon: <Hash size={20} />, label: MODULE_NAMES.liuyao },
-  ]
+  useEffect(() => {
+    const path = location.pathname.replace(/^\/BuSuan\//, '').replace(/^\//, '') || 'profile'
+    const modulePath = NAV_ITEMS.find(item => item.path === path)?.path
+    if (modulePath && modulePath !== activeModule) {
+      setActiveModule(modulePath)
+    }
+  }, [location.pathname, activeModule, setActiveModule])
+
+  const navItems = NAV_ITEMS
 
   return (
     <header className="bg-bg-secondary/80 backdrop-blur-sm border-b border-gold/20 sticky top-0 z-40">
@@ -61,7 +72,7 @@ const Header: React.FC = () => {
           </nav>
 
           <div className="lg:hidden">
-            <MobileNav navItems={navItems} activeModule={activeModule} setActiveModule={setActiveModule} />
+            <MobileNav navItems={navItems} setActiveModule={setActiveModule} />
           </div>
         </div>
       </div>
@@ -71,11 +82,10 @@ const Header: React.FC = () => {
 
 interface MobileNavProps {
   navItems: { path: ModuleType; icon: React.ReactNode; label: string }[]
-  activeModule: ModuleType
   setActiveModule: (module: ModuleType) => void
 }
 
-const MobileNav: React.FC<MobileNavProps> = ({ navItems, activeModule, setActiveModule }) => {
+const MobileNav: React.FC<MobileNavProps> = ({ navItems, setActiveModule }) => {
   const [isOpen, setIsOpen] = React.useState(false)
 
   return (

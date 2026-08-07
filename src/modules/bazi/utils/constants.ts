@@ -1,4 +1,5 @@
-import type { WuXing, TianGan } from '../../../types'
+import type { WuXing, TianGan, DiZhi } from '../../../types'
+import { GAN_WUXING, ZHI_WUXING } from '../../../utils/wuxing'
 
 export const WUXING_COLOR: Record<WuXing, string> = {
   '金': '#c0c0c0',
@@ -14,16 +15,6 @@ export const WUXING_BG: Record<WuXing, string> = {
   '水': 'bg-water/20 text-water border-water/30',
   '火': 'bg-fire/20 text-fire border-fire/30',
   '土': 'bg-earth/20 text-earth border-earth/30',
-}
-
-export const GAN_WUXING: Record<TianGan, WuXing> = {
-  '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土',
-  '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水',
-}
-
-export const ZHI_WUXING: Record<string, WuXing> = {
-  '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土', '巳': '火',
-  '午': '火', '未': '土', '申': '金', '酉': '金', '戌': '土', '亥': '水',
 }
 
 export const ZHI_SHENGXIAO: Record<string, string> = {
@@ -47,20 +38,12 @@ export const SHICHEN_MAP: { label: string; range: string; index: number }[] = [
   { label: '晚子时', range: '23:00-00:00', index: 12 },
 ]
 
-export const JIXIONG_MAP: Record<string, { color: string; bg: string }> = {
-  '大吉': { color: 'text-red', bg: 'bg-red/20' },
-  '吉': { color: 'text-wood', bg: 'bg-wood/20' },
-  '半吉': { color: 'text-gold', bg: 'bg-gold/20' },
-  '凶': { color: 'text-water', bg: 'bg-water/20' },
-  '大凶': { color: 'text-text-muted', bg: 'bg-text-muted/20' },
-}
-
 export function getWuXingByGan(gan: TianGan): WuXing {
   return GAN_WUXING[gan]
 }
 
 export function getWuXingByZhi(zhi: string): WuXing {
-  return ZHI_WUXING[zhi] || '土'
+  return ZHI_WUXING[zhi as DiZhi] || '土'
 }
 
 export function getWuXingBg(wx: WuXing): string {

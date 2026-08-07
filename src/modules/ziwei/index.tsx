@@ -18,13 +18,10 @@ const ZiweiModule: React.FC = () => {
 
   const handleSubmit = useCallback((info: BirthInfo) => {
     setLoading(true)
-
-    setTimeout(() => {
-      const ziwei = calculateZiwei(info)
-      setResult(ziwei)
-      setZiweiResult(ziwei as any)
-      setLoading(false)
-    }, 300)
+    const ziwei = calculateZiwei(info)
+    setResult(ziwei)
+    setZiweiResult(ziwei as any)
+    setLoading(false)
   }, [setZiweiResult])
 
   const handlePalaceClick = useCallback((palace: ZiweiPalaceData) => {

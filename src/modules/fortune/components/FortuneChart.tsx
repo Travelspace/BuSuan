@@ -1,6 +1,7 @@
 import React from 'react'
 import { Card } from '../../../components/common'
 import { TREND_LABELS } from '../utils/constants'
+import { FORTUNE } from '../../../locales/zh-CN'
 import type { FortuneResult } from '../utils/calculation'
 
 interface FortuneChartProps {
@@ -39,7 +40,7 @@ const FortuneChart: React.FC<FortuneChartProps> = ({ result }) => {
 
   return (
     <Card hover={false}>
-      <h3 className="text-xl font-serif text-gold mb-4">运势趋势图</h3>
+      <h3 className="text-xl font-serif text-gold mb-4">{FORTUNE.chartTitle}</h3>
 
       <div className="flex items-center gap-4 mb-4 text-sm">
         <span className="text-text-secondary">{trend.text}</span>
@@ -131,11 +132,11 @@ const FortuneChart: React.FC<FortuneChartProps> = ({ result }) => {
       <div className="flex items-center justify-center gap-6 mt-4 text-xs text-text-muted">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-wood" />
-          <span>最佳年份: {bestYear}</span>
+          <span>{FORTUNE.bestYear}: {bestYear}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-fire" />
-          <span>最低年份: {worstYear}</span>
+          <span>{FORTUNE.worstYear}: {worstYear}</span>
         </div>
       </div>
     </Card>

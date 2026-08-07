@@ -1,5 +1,46 @@
 import { astro } from 'iztro'
 import type { BirthInfo } from '../../../types'
+import { getTimeIndex } from '../../../utils/date'
+
+export interface IztroStar {
+  name: string
+  mutagen?: string
+}
+
+export interface IztroPalace {
+  index: number
+  name: string
+  heavenlyStem: string
+  earthlyBranch: string
+  majorStars: IztroStar[]
+  minorStars: IztroStar[]
+  adjectiveStars?: IztroStar[]
+  isBodyPalace: boolean
+  decadal?: {
+    range: [number, number]
+    heavenlyStem: string
+    earthlyBranch: string
+  }
+  ages?: number[]
+}
+
+export interface IztroAstrolabe {
+  gender: string
+  solarDate: string
+  lunarDate: string
+  chineseDate: string
+  time: string
+  timeRange: string
+  sign: string
+  zodiac: string
+  fiveElementsClass: string
+  soul: string
+  body: string
+  earthlyBranchOfSoulPalace: string
+  earthlyBranchOfBodyPalace: string
+  palaces: IztroPalace[]
+  horoscope: (dateStr: string, timeIndex: number) => unknown
+}
 
 export interface ZiweiPalaceData {
   index: number
@@ -41,13 +82,7 @@ export interface ZiweiCalcResult {
     ji: { star: string; palace: number }
   }
   mingGongStars: string[]
-  astrolabe: any
-}
-
-function getTimeIndex(hour: number, minute: number): number {
-  if (hour === 0 && minute === 0) return 0
-  if (hour === 23 && minute >= 30) return 12
-  return Math.floor((hour + 1) / 2)
+  astrolabe: IztroAstrolabe
 }
 
 export function calculateZiwei(birthInfo: BirthInfo): ZiweiCalcResult | null {
@@ -65,25 +100,25 @@ export function calculateZiwei(birthInfo: BirthInfo): ZiweiCalcResult | null {
   const dateStr = `${year}-${month}-${day}`
 
   try {
-    const astrolabe = birthInfo.calendar === 'solar'
+    const astrolabe = (birthInfo.calendar === 'solar'
       ? astro.bySolar(dateStr, timeIndex, genderStr, true, 'zh-CN')
-      : astro.byLunar(dateStr, timeIndex, genderStr, false, true, 'zh-CN')
+      : astro.byLunar(dateStr, timeIndex, genderStr, false, true, 'zh-CN')) as IztroAstrolabe
 
-    const palaces: ZiweiPalaceData[] = astrolabe.palaces.map((p: any) => ({
+    const palaces: ZiweiPalaceData[] = astrolabe.palaces.map((p: IztroPalace) => ({
       index: p.index,
       name: p.name.endsWith('宫') ? p.name : p.name + '宫',
       heavenlyStem: p.heavenlyStem,
       earthlyBranch: p.earthlyBranch,
-      majorStars: p.majorStars.map((s: any) => s.name),
-      minorStars: p.minorStars.map((s: any) => s.name),
-      adjectiveStars: p.adjectiveStars?.map((s: any) => s.name) || [],
+      majorStars: p.majorStars.map((s: IztroStar) => s.name),
+      minorStars: p.minorStars.map((s: IztroStar) => s.name),
+      adjectiveStars: p.adjectiveStars?.map((s: IztroStar) => s.name) || [],
       sihua: p.majorStars
-        .filter((s: any) => s.mutagen)
-        .map((s: any) => `${s.name}·${s.mutagen}`)
+        .filter((s: IztroStar) => s.mutagen)
+        .map((s: IztroStar) => `${s.name}·${s.mutagen}`)
         .concat(
           p.minorStars
-            .filter((s: any) => s.mutagen)
-            .map((s: any) => `${s.name}·${s.mutagen}`)
+            .filter((s: IztroStar) => s.mutagen)
+            .map((s: IztroStar) => `${s.name}·${s.mutagen}`)
         ),
       isBodyPalace: p.isBodyPalace,
       decadal: p.decadal
@@ -107,9 +142,9 @@ export function calculateZiwei(birthInfo: BirthInfo): ZiweiCalcResult | null {
       '禄': 'lu', '权': 'quan', '科': 'ke', '忌': 'ji',
     }
 
-    astrolabe.palaces.forEach((p: any) => {
+    astrolabe.palaces.forEach((p: IztroPalace) => {
       const allStars = [...p.majorStars, ...p.minorStars]
-      allStars.forEach((s: any) => {
+      allStars.forEach((s: IztroStar) => {
         if (s.mutagen && mutagenMap[s.mutagen]) {
           const key = mutagenMap[s.mutagen]
           sihua[key] = { star: s.name, palace: p.index }
@@ -117,9 +152,9 @@ export function calculateZiwei(birthInfo: BirthInfo): ZiweiCalcResult | null {
       })
     })
 
-    const mingGong = astrolabe.palaces.find((p: any) => p.name === '命宫' || p.name === '命')
+    const mingGong = astrolabe.palaces.find((p: IztroPalace) => p.name === '命宫' || p.name === '命')
     const mingGongStars = mingGong
-      ? mingGong.majorStars.map((s: any) => s.name)
+      ? mingGong.majorStars.map((s: IztroStar) => s.name)
       : []
 
     return {
@@ -147,7 +182,7 @@ export function calculateZiwei(birthInfo: BirthInfo): ZiweiCalcResult | null {
   }
 }
 
-export function getHoroscope(astrolabe: any, dateStr: string, timeIndex: number) {
+export function getHoroscope(astrolabe: IztroAstrolabe | null, dateStr: string, timeIndex: number) {
   if (!astrolabe) return null
   try {
     return astrolabe.horoscope(dateStr, timeIndex)

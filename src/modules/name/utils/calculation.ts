@@ -138,8 +138,16 @@ export function calculateName(
     givenNameChars = chars.slice(1)
   }
 
-  const surnameStrokes = surnameChars.map(c => getStrokeCount(c))
-  const givenNameStrokes = givenNameChars.map(c => getStrokeCount(c))
+  const surnameStrokes = surnameChars
+    .map(c => getStrokeCount(c))
+    .filter((s): s is number => s !== null)
+  const givenNameStrokes = givenNameChars
+    .map(c => getStrokeCount(c))
+    .filter((s): s is number => s !== null)
+
+  if (surnameStrokes.length !== surnameChars.length || givenNameStrokes.length !== givenNameChars.length) {
+    return null
+  }
 
   const surnameTotal = surnameStrokes.reduce((a, b) => a + b, 0)
   const givenNameTotal = givenNameStrokes.reduce((a, b) => a + b, 0)

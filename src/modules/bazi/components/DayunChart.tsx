@@ -1,6 +1,7 @@
 import React from 'react'
 import { Card } from '../../../components/common'
-import { GAN_WUXING, ZHI_WUXING, getWuXingBg } from '../utils/constants'
+import { getWuXingBg } from '../utils/constants'
+import { GAN_WUXING, ZHI_WUXING } from '../../../utils/wuxing'
 import type { Dayun, Liunian, WuXing } from '../../../types'
 
 interface DayunProps {

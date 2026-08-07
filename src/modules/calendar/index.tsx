@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { useAppStore } from '../../store'
 import { getMonthData, type DayInfo, type MonthData } from './utils/calculation'
 import { MODULE_NAMES, MODULE_DESCRIPTIONS } from '../../utils/constants'
@@ -17,10 +17,10 @@ const CalendarModule: React.FC = () => {
   const [detailOpen, setDetailOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState('')
 
-  const monthData: MonthData = useCallback(
+  const monthData: MonthData = useMemo(
     () => getMonthData(year, month, baziResult),
     [year, month, baziResult]
-  )()
+  )
 
   const handlePrevMonth = useCallback(() => {
     if (month === 1) {

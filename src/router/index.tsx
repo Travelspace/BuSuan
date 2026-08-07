@@ -23,77 +23,82 @@ function LazyModule({ children }: { children: React.ReactNode }) {
   )
 }
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <Layout />,
+      children: [
+        {
+          index: true,
+          element: <Navigate to="/profile" replace />,
+        },
+        {
+          path: 'profile',
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <LazyModule><ProfileModule /></LazyModule>
+            </Suspense>
+          ),
+        },
+        {
+          path: 'bazi',
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <LazyModule><BaziModule /></LazyModule>
+            </Suspense>
+          ),
+        },
+        {
+          path: 'ziwei',
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <LazyModule><ZiweiModule /></LazyModule>
+            </Suspense>
+          ),
+        },
+        {
+          path: 'fortune',
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <LazyModule><FortuneModule /></LazyModule>
+            </Suspense>
+          ),
+        },
+        {
+          path: 'name',
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <LazyModule><NameModule /></LazyModule>
+            </Suspense>
+          ),
+        },
+        {
+          path: 'calendar',
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <LazyModule><CalendarModule /></LazyModule>
+            </Suspense>
+          ),
+        },
+        {
+          path: 'liuyao',
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <LazyModule><LiuyaoModule /></LazyModule>
+            </Suspense>
+          ),
+        },
+        {
+          path: '*',
+          element: <NotFound />,
+        },
+      ],
+    },
+  ],
   {
-    path: '/',
-    element: <Layout />,
-    children: [
-      {
-        index: true,
-        element: <Navigate to="/profile" replace />,
-      },
-      {
-        path: 'profile',
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <LazyModule><ProfileModule /></LazyModule>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'bazi',
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <LazyModule><BaziModule /></LazyModule>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'ziwei',
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <LazyModule><ZiweiModule /></LazyModule>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'fortune',
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <LazyModule><FortuneModule /></LazyModule>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'name',
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <LazyModule><NameModule /></LazyModule>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'calendar',
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <LazyModule><CalendarModule /></LazyModule>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'liuyao',
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <LazyModule><LiuyaoModule /></LazyModule>
-          </Suspense>
-        ),
-      },
-      {
-        path: '*',
-        element: <NotFound />,
-      },
-    ],
-  },
-])
+    basename: '/BuSuan',
+  }
+)
 
 export default router

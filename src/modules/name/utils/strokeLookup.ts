@@ -66,7 +66,7 @@ function getKangxiStrokeFallback(char: string): number | null {
   return null
 }
 
-export function getStrokeCount(char: string): number {
+export function getStrokeCount(char: string): number | null {
   const predefined = getPredefinedStroke(char)
   if (predefined !== null) return predefined
 
@@ -79,5 +79,5 @@ export function getStrokeCount(char: string): number {
   const kangxiStroke = getKangxiStrokeFallback(char)
   if (kangxiStroke !== null) return kangxiStroke
 
-  return 1
+  return null
 }

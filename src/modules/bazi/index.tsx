@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { useAppStore } from '../../store'
 import { calculateBazi } from './utils/calculation'
 import { MODULE_NAMES, MODULE_DESCRIPTIONS } from '../../utils/constants'
+import { getAge } from '../../utils/date'
 import BirthForm from './components/BirthForm'
 import FourPillars from './components/FourPillars'
 import TenGods from './components/TenGods'
@@ -17,18 +18,13 @@ const BaziModule: React.FC = () => {
 
   const handleSubmit = useCallback((info: BirthInfo) => {
     setLoading(true)
-    
-    setTimeout(() => {
-      const bazi = calculateBazi(info)
-      setResult(bazi)
-      setBaziResult(bazi)
-      setLoading(false)
-    }, 300)
+    const bazi = calculateBazi(info)
+    setResult(bazi)
+    setBaziResult(bazi)
+    setLoading(false)
   }, [setBaziResult])
 
-  const currentAge = birthInfo.date
-    ? new Date().getFullYear() - new Date(birthInfo.date).getFullYear()
-    : undefined
+  const currentAge = birthInfo.date ? getAge(new Date(birthInfo.date)) : undefined
 
   return (
     <div className="space-y-6">

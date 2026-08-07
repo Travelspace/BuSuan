@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { Card, Modal } from '../../../components/common'
 import { LEVEL_COLORS, DIMENSION_LABELS, DIMENSION_ICONS } from '../utils/constants'
-import { GAN_WUXING, getWuXingBg } from '../../bazi/utils/constants'
+import { GAN_WUXING } from '../../../utils/wuxing'
+import { getWuXingBg } from '../../bazi/utils/constants'
+import { FORTUNE } from '../../../locales/zh-CN'
 import type { YearFortune } from '../utils/calculation'
 
 interface FortuneCardProps {
@@ -56,14 +58,14 @@ const FortuneCard: React.FC<FortuneCardProps> = ({ fortune, isCurrentYear }) => 
         <div className="text-right text-[10px] text-text-muted mt-1">{fortune.score}分</div>
 
         {isCurrentYear && (
-          <div className="text-xs text-gold mt-2 text-center">今年</div>
+          <div className="text-xs text-gold mt-2 text-center">{FORTUNE.currentYear}</div>
         )}
       </div>
 
       <Modal
         isOpen={showDetail}
         onClose={() => setShowDetail(false)}
-        title={`${fortune.year}年 ${fortune.ganZhi} 运势详情`}
+        title={`${fortune.year}年 ${fortune.ganZhi} ${FORTUNE.detailTitle}`}
         size="lg"
       >
         <div className="space-y-4">
@@ -71,7 +73,7 @@ const FortuneCard: React.FC<FortuneCardProps> = ({ fortune, isCurrentYear }) => 
             <span className={`text-lg px-3 py-1 rounded border ${colors.bg} ${colors.text} ${colors.border}`}>
               {fortune.level}
             </span>
-            <span className="text-text-secondary text-sm">综合评分：{fortune.score}/100</span>
+            <span className="text-text-secondary text-sm">{FORTUNE.scoreLabel}：{fortune.score}/100</span>
           </div>
 
           <p className="text-text-primary text-sm">{fortune.summary}</p>
@@ -90,7 +92,7 @@ const FortuneCard: React.FC<FortuneCardProps> = ({ fortune, isCurrentYear }) => 
 
           {fortune.isKeyYear && fortune.keyReason && (
             <div className="p-3 bg-gold/5 rounded-lg border border-gold/20">
-              <p className="text-gold text-sm">⚡ 关键年份：{fortune.keyReason}</p>
+              <p className="text-gold text-sm">{FORTUNE.keyYearPrefix}：{fortune.keyReason}</p>
             </div>
           )}
         </div>
@@ -108,7 +110,7 @@ const FortuneCards: React.FC<FortuneCardsProps> = ({ fortunes }) => {
 
   return (
     <Card hover={false}>
-      <h3 className="text-xl font-serif text-gold mb-6">十年流年运势</h3>
+      <h3 className="text-xl font-serif text-gold mb-6">{FORTUNE.decadesTitle}</h3>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
         {fortunes.map((f) => (
