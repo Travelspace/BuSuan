@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useAppStore } from '../../store'
 import { calculateName } from './utils/calculation'
-import { MODULE_NAMES, MODULE_DESCRIPTIONS } from '../../utils/constants'
+import { useTranslation } from '../../i18n'
 import NameForm from './components/NameForm'
 import FiveGeDisplay from './components/FiveGeDisplay'
 import SanCaiAnalysis from './components/SanCaiAnalysis'
@@ -11,6 +11,7 @@ import type { NameResult } from '../../types'
 
 const NameModule: React.FC = () => {
   const { baziResult } = useAppStore()
+  const t = useTranslation()
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<NameResult | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -20,17 +21,17 @@ const NameModule: React.FC = () => {
     setError(null)
     const nameResult = calculateName(name, baziResult)
     if (!nameResult) {
-      setError('姓名中包含无法识别笔画的字符，请检查后重新输入')
+      setError(t.NAME_UI.errorUnknownStroke)
     }
     setResult(nameResult)
     setLoading(false)
-  }, [baziResult])
+  }, [baziResult, t])
 
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-serif text-gold mb-2">{MODULE_NAMES.name}</h2>
-        <p className="text-text-secondary">{MODULE_DESCRIPTIONS.name}</p>
+        <h2 className="text-3xl font-serif text-gold mb-2">{t.MODULE_NAMES.name}</h2>
+        <p className="text-text-secondary">{t.MODULE_DESCRIPTIONS.name}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -64,8 +65,8 @@ const NameModule: React.FC = () => {
           <div className="lg:col-span-2 flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <div className="text-6xl mb-4 opacity-20">名</div>
-              <p className="text-text-muted text-lg">请输入姓名开始测试</p>
-              <p className="text-text-secondary text-sm mt-2">基于康熙字典笔画计算五格数理</p>
+              <p className="text-text-muted text-lg">{t.NAME_UI.emptyTitle}</p>
+              <p className="text-text-secondary text-sm mt-2">{t.NAME_UI.emptyHint}</p>
             </div>
           </div>
         )}

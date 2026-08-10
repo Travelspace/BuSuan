@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 import { Card, Modal } from '../../../components/common'
+import { useTranslation } from '../../../i18n'
 import type { GuaInfo, LiuyaoResult } from '../../../types'
-import { LEVEL_LABELS } from '../utils/constants'
 
 interface GuaInterpretationProps {
   result: LiuyaoResult
 }
 
 const GuaInterpretation: React.FC<GuaInterpretationProps> = ({ result }) => {
+  const t = useTranslation()
   const [selectedYao, setSelectedYao] = useState<number | null>(null)
   const [yaoModalOpen, setYaoModalOpen] = useState(false)
 
-  const levelInfo = LEVEL_LABELS[result.interpretation.level]
+  const levelInfo = t.LEVEL_LABELS[result.interpretation.level]
 
   const handleYaoClick = (position: number) => {
     setSelectedYao(position)
@@ -24,23 +25,23 @@ const GuaInterpretation: React.FC<GuaInterpretationProps> = ({ result }) => {
     <div className="space-y-4">
       <Card hover={false}>
         <div className="text-center mb-4">
-          <div className="text-text-muted text-sm mb-1">综合判断</div>
+          <div className="text-text-muted text-sm mb-1">{t.LIUYAO_UI.overallLabel}</div>
           <div className={`text-3xl font-serif ${levelInfo.color}`}>{levelInfo.label}</div>
         </div>
 
         <div className="bg-bg-primary/30 rounded-md p-4 mb-4">
-          <div className="text-gold text-sm font-medium mb-2">卦象总论</div>
+          <div className="text-gold text-sm font-medium mb-2">{t.LIUYAO_UI.summaryTitle}</div>
           <p className="text-text-primary text-sm leading-relaxed">{result.interpretation.summary}</p>
         </div>
 
         <div className="bg-bg-primary/30 rounded-md p-4">
-          <div className="text-gold text-sm font-medium mb-2">建议</div>
+          <div className="text-gold text-sm font-medium mb-2">{t.LIUYAO_UI.adviceTitle}</div>
           <p className="text-text-secondary text-sm leading-relaxed">{result.interpretation.advice}</p>
         </div>
       </Card>
 
       <Card hover={false}>
-        <h4 className="text-gold font-serif mb-3">爻辞详情</h4>
+        <h4 className="text-gold font-serif mb-3">{t.LIUYAO_UI.yaoCiTitle}</h4>
         <div className="space-y-2">
           {result.benGua.yaoci.map(yao => (
             <div
@@ -53,8 +54,8 @@ const GuaInterpretation: React.FC<GuaInterpretationProps> = ({ result }) => {
               <span className={`text-sm font-medium w-12 shrink-0 ${
                 yao.isMoving ? 'text-fire' : yao.type === '阳' ? 'text-gold' : 'text-text-secondary'
               }`}>
-                {['初', '二', '三', '四', '五', '上'][yao.position - 1]}{yao.type === '阳' ? '九' : '六'}
-                {yao.isMoving && ' 动'}
+                {t.LIUYAO_UI.yaoPrefix[yao.position - 1]}{yao.type === '阳' ? t.LIUYAO_UI.yangLabel : t.LIUYAO_UI.yinLabel}
+                {yao.isMoving && ` ${t.LIUYAO_UI.movingMark}`}
               </span>
               <span className="text-text-primary text-sm">{yao.text}</span>
             </div>
@@ -64,7 +65,7 @@ const GuaInterpretation: React.FC<GuaInterpretationProps> = ({ result }) => {
 
       {result.benGua.guaciExplain && (
         <Card hover={false}>
-          <h4 className="text-gold font-serif mb-3">卦辞详解</h4>
+          <h4 className="text-gold font-serif mb-3">{t.LIUYAO_UI.guaCiDetailTitle}</h4>
           <p className="text-text-secondary text-sm leading-relaxed">{result.benGua.guaciExplain}</p>
         </Card>
       )}
@@ -72,7 +73,7 @@ const GuaInterpretation: React.FC<GuaInterpretationProps> = ({ result }) => {
       <Modal
         isOpen={yaoModalOpen}
         onClose={() => setYaoModalOpen(false)}
-        title={selectedYaoInfo ? `${['初', '二', '三', '四', '五', '上'][selectedYaoInfo.position - 1]}${selectedYaoInfo.type === '阳' ? '九' : '六'}爻辞` : ''}
+        title={selectedYaoInfo ? `${t.LIUYAO_UI.yaoPrefix[selectedYaoInfo.position - 1]}${selectedYaoInfo.type === '阳' ? t.LIUYAO_UI.yangLabel : t.LIUYAO_UI.yinLabel}${t.LIUYAO_UI.yaoModalTitle}` : ''}
         size="md"
       >
         {selectedYaoInfo && (
@@ -81,7 +82,7 @@ const GuaInterpretation: React.FC<GuaInterpretationProps> = ({ result }) => {
             <div className="text-text-secondary text-sm leading-relaxed">{selectedYaoInfo.explain}</div>
             {selectedYaoInfo.isMoving && (
               <div className="bg-fire/10 border border-fire/20 rounded-md p-3">
-                <span className="text-fire text-sm">此为动爻，变化之所在，需特别关注</span>
+                <span className="text-fire text-sm">{t.LIUYAO_UI.movingYaoHint}</span>
               </div>
             )}
           </div>

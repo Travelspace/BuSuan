@@ -1,11 +1,11 @@
 import { Solar, Lunar, EightChar } from 'lunar-typescript'
-import type { 
-  BaziResult, 
-  Pillar, 
-  HiddenStem, 
-  TenGodRelation, 
+import type {
+  BaziResult,
+  Pillar,
+  HiddenStem,
+  TenGodRelation,
   TenGod,
-  Dayun, 
+  Dayun,
   Liunian,
   WuXing,
   TianGan,
@@ -14,6 +14,7 @@ import type {
   BirthInfo
 } from '../../../types'
 import { GAN_WUXING, ZHI_WUXING, WU_XING_SHENG, WU_XING_KE, getShengWo, getKeWo } from '../../../utils/wuxing'
+import { getCorrectedSolarTime } from '../../../utils/trueSolarTime'
 
 const HIDE_GAN_TYPE: Record<number, ('本气' | '中气' | '余气')[]> = {
   0: ['本气'],
@@ -117,22 +118,24 @@ function getXiYongShen(eightChar: EightChar, fiveElements: Record<WuXing, number
 
 export function calculateBazi(birthInfo: BirthInfo): BaziResult | null {
   if (!birthInfo.date) return null
-  
-  const date = new Date(birthInfo.date)
-  const year = date.getFullYear()
-  const month = date.getMonth() + 1
-  const day = date.getDate()
-  const hour = date.getHours()
-  const minute = date.getMinutes()
+
+  // 真太阳时校正: 若有经度和时区, 自动校正出生时间
+  const corrected = getCorrectedSolarTime(
+    birthInfo.date, birthInfo.calendar,
+    birthInfo.longitude, birthInfo.timezone,
+  )
+  const { year, month, day, hour, minute } = corrected
   let lunar: Lunar
-  
+
   if (birthInfo.calendar === 'solar') {
     const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0)
     lunar = solar.getLunar()
   } else {
-    lunar = Lunar.fromYmdHms(year, month, day, hour, minute, 0)
+    // 农历输入: corrected 已将农历转为阳历, 直接用阳历创建
+    const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0)
+    lunar = solar.getLunar()
   }
-  
+
   const eightChar = lunar.getEightChar()
   
   const pillars = {
@@ -256,27 +259,22 @@ export function getJieQi(year: number, month: number, day: number): string {
   return jieQi || ''
 }
 
-export function dateToBazi(dateStr: string, calendar: 'solar' | 'lunar' = 'solar'): string {
+export function dateToBazi(
+  dateStr: string,
+  calendar: 'solar' | 'lunar' = 'solar',
+  longitude?: number,
+  timezone?: string,
+): string {
   if (!dateStr) return ''
-  
-  const date = new Date(dateStr)
-  const year = date.getFullYear()
-  const month = date.getMonth() + 1
-  const day = date.getDate()
-  const hour = date.getHours()
-  const minute = date.getMinutes()
-  
-  let lunar: Lunar
-  
-  if (calendar === 'solar') {
-    const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0)
-    lunar = solar.getLunar()
-  } else {
-    lunar = Lunar.fromYmdHms(year, month, day, hour, minute, 0)
-  }
-  
+
+  // 真太阳时校正
+  const corrected = getCorrectedSolarTime(dateStr, calendar, longitude, timezone)
+  const { year, month, day, hour, minute } = corrected
+
+  const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0)
+  const lunar = solar.getLunar()
   const eightChar = lunar.getEightChar()
-  
+
   const yearGan = eightChar.getYearGan()
   const yearZhi = eightChar.getYearZhi()
   const monthGan = eightChar.getMonthGan()
@@ -285,6 +283,6 @@ export function dateToBazi(dateStr: string, calendar: 'solar' | 'lunar' = 'solar
   const dayZhi = eightChar.getDayZhi()
   const hourGan = eightChar.getTimeGan()
   const hourZhi = eightChar.getTimeZhi()
-  
+
   return `${yearGan}${yearZhi}年 ${monthGan}${monthZhi}月 ${dayGan}${dayZhi}日 ${hourGan}${hourZhi}时`
 }

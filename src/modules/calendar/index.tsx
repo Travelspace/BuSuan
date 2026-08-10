@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react'
 import { useAppStore } from '../../store'
 import { getMonthData, type DayInfo, type MonthData } from './utils/calculation'
-import { MODULE_NAMES, MODULE_DESCRIPTIONS } from '../../utils/constants'
+import { useTranslation } from '../../i18n'
 import { Card } from '../../components/common'
 import CalendarGrid from './components/CalendarGrid'
 import DayDetail from './components/DayDetail'
@@ -10,6 +10,7 @@ import BaziRecommend from './components/BaziRecommend'
 
 const CalendarModule: React.FC = () => {
   const { baziResult } = useAppStore()
+  const t = useTranslation()
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
@@ -48,15 +49,15 @@ const CalendarModule: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-serif text-gold mb-2">{MODULE_NAMES.calendar}</h2>
-        <p className="text-text-secondary">{MODULE_DESCRIPTIONS.calendar}</p>
+        <h2 className="text-3xl font-serif text-gold mb-2">{t.MODULE_NAMES.calendar}</h2>
+        <p className="text-text-secondary">{t.MODULE_DESCRIPTIONS.calendar}</p>
       </div>
 
       {baziResult && (
         <Card hover={false} className="bg-wood/5 border-wood/20">
           <div className="flex items-center gap-2">
             <span className="text-wood">✓</span>
-            <span className="text-wood text-sm">已关联八字排盘数据，日历中显示个性化吉日推荐</span>
+            <span className="text-wood text-sm">{t.CALENDAR_UI.baziLinkedHint}</span>
           </div>
         </Card>
       )}

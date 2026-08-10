@@ -1,5 +1,6 @@
 import React from 'react'
-import { MUTAGEN_COLORS, PALACE_DESCRIPTIONS, MAJOR_STAR_DESCRIPTIONS } from '../utils/constants'
+import { MUTAGEN_COLORS } from '../utils/constants'
+import { useTranslation } from '../../../i18n'
 import type { ZiweiPalaceData } from '../utils/calculation'
 
 interface PalaceCellProps {
@@ -8,8 +9,9 @@ interface PalaceCellProps {
 }
 
 const PalaceCell: React.FC<PalaceCellProps> = ({ palace, onClick }) => {
+  const t = useTranslation()
   const hasSihua = palace.sihua.length > 0
-  const desc = PALACE_DESCRIPTIONS[palace.name] || ''
+  const desc = t.PALACE_DESCRIPTIONS[palace.name] || ''
 
   return (
     <div
@@ -21,7 +23,7 @@ const PalaceCell: React.FC<PalaceCellProps> = ({ palace, onClick }) => {
       <div className="flex items-center justify-between mb-1">
         <span className={`text-xs font-medium ${palace.name === '命宫' ? 'text-gold' : 'text-text-secondary'}`}>
           {palace.name}
-          {palace.isBodyPalace && <span className="text-fire ml-1">(身)</span>}
+          {palace.isBodyPalace && <span className="text-fire ml-1">{t.ZIWEI_UI.bodyPalaceMark}</span>}
         </span>
         <span className="text-text-muted text-[10px]">
           {palace.heavenlyStem}{palace.earthlyBranch}
@@ -98,6 +100,7 @@ const POSITIONS = [
 ]
 
 const ZiweiChart: React.FC<ZiweiChartProps> = ({ palaces, onPalaceClick }) => {
+  const t = useTranslation()
   return (
     <div className="w-full max-w-[600px] mx-auto">
       <div className="grid grid-cols-4 gap-1.5">
@@ -107,8 +110,8 @@ const ZiweiChart: React.FC<ZiweiChartProps> = ({ palaces, onPalaceClick }) => {
               return (
                 <div key={cellIndex} className="flex items-center justify-center p-2">
                   <div className="text-center">
-                    <div className="text-gold font-serif text-lg">紫微斗数</div>
-                    <div className="text-text-muted text-xs mt-1">命盘</div>
+                    <div className="text-gold font-serif text-lg">{t.ZIWEI_UI.chartCenterTitle}</div>
+                    <div className="text-text-muted text-xs mt-1">{t.ZIWEI_UI.chartCenterSub}</div>
                   </div>
                 </div>
               )
@@ -117,7 +120,7 @@ const ZiweiChart: React.FC<ZiweiChartProps> = ({ palaces, onPalaceClick }) => {
               return (
                 <div key={cellIndex} className="flex items-center justify-center p-2">
                   <div className="text-center text-text-muted text-xs">
-                    <div>南</div>
+                    <div>{t.ZIWEI_UI.directionSouth}</div>
                   </div>
                 </div>
               )
@@ -126,7 +129,7 @@ const ZiweiChart: React.FC<ZiweiChartProps> = ({ palaces, onPalaceClick }) => {
               return (
                 <div key={cellIndex} className="flex items-center justify-center p-2">
                   <div className="text-center text-text-muted text-xs">
-                    <div>北</div>
+                    <div>{t.ZIWEI_UI.directionNorth}</div>
                   </div>
                 </div>
               )
@@ -135,7 +138,7 @@ const ZiweiChart: React.FC<ZiweiChartProps> = ({ palaces, onPalaceClick }) => {
               return (
                 <div key={cellIndex} className="flex items-center justify-center p-2">
                   <div className="text-center text-text-muted text-xs">
-                    <div>中</div>
+                    <div>{t.ZIWEI_UI.directionCenter}</div>
                   </div>
                 </div>
               )

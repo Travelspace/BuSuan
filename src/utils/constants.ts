@@ -32,6 +32,8 @@ export const NA_YIN: Record<string, string> = {
 }
 
 export { MODULE_NAMES, MODULE_DESCRIPTIONS } from '../locales/zh-CN'
+// NOTE: For reactive language switching, import MODULE_NAMES / MODULE_DESCRIPTIONS
+// from `../i18n` via the `useTranslation()` hook instead of from this file.
 
 export { FORTUNE_LEVELS, JI_XIONG_LEVELS, LEVEL_COLORS, LEVEL_SCORE } from './jixiong'
 

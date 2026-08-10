@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Card } from '../../../components/common'
 import { tossCoins } from '../utils/calculation'
-import { YAO_POSITIONS } from '../utils/constants'
+import { useTranslation } from '../../../i18n'
 
 interface YaoGuaFormProps {
   onResult: (yaos: { type: '阳' | '阴'; isMoving: boolean }[], question: string) => void
@@ -10,6 +10,7 @@ interface YaoGuaFormProps {
 }
 
 const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading }) => {
+  const t = useTranslation()
   const [mode, setMode] = useState<'manual' | 'time'>('manual')
   const [question, setQuestion] = useState('')
   const [yaoResults, setYaoResults] = useState<(null | { type: '阳' | '阴'; isMoving: boolean })[]>([
@@ -52,7 +53,7 @@ const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading
 
   return (
     <Card hover={false}>
-      <h3 className="text-lg font-serif text-gold mb-4">起卦</h3>
+      <h3 className="text-lg font-serif text-gold mb-4">{t.LIUYAO_UI.formTitle}</h3>
 
       <div className="flex gap-2 mb-4">
         <button
@@ -61,7 +62,7 @@ const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading
             mode === 'manual' ? 'bg-gold text-bg-primary' : 'bg-bg-primary/30 text-text-secondary hover:bg-gold/20'
           }`}
         >
-          手动摇卦
+          {t.LIUYAO_UI.manualMode}
         </button>
         <button
           onClick={() => setMode('time')}
@@ -69,17 +70,17 @@ const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading
             mode === 'time' ? 'bg-gold text-bg-primary' : 'bg-bg-primary/30 text-text-secondary hover:bg-gold/20'
           }`}
         >
-          时间起卦
+          {t.LIUYAO_UI.timeMode}
         </button>
       </div>
 
       <div className="mb-4">
-        <label className="block text-text-secondary text-sm mb-2">占问事项（可选）</label>
+        <label className="block text-text-secondary text-sm mb-2">{t.LIUYAO_UI.questionLabel}</label>
         <input
           type="text"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="请输入您要占问的事项"
+          placeholder={t.LIUYAO_UI.questionPlaceholder}
           className="w-full bg-bg-primary/50 border border-gold/20 rounded-md px-4 py-2.5 text-text-primary placeholder-text-muted focus:border-gold focus:outline-none transition-colors"
         />
       </div>
@@ -87,13 +88,13 @@ const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading
       {mode === 'manual' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-text-secondary text-sm">六爻摇卦</span>
+            <span className="text-text-secondary text-sm">{t.LIUYAO_UI.sixYaoTitle}</span>
             <Button size="sm" variant="secondary" onClick={handleAutoToss} disabled={isAutoTossing}>
-              {isAutoTossing ? '摇卦中...' : '一键摇卦'}
+              {isAutoTossing ? t.LIUYAO_UI.autoTossing : t.LIUYAO_UI.autoToss}
             </Button>
           </div>
 
-          {YAO_POSITIONS.map(({ position, label }) => {
+          {t.YAO_POSITIONS.map(({ position, label }) => {
             const result = yaoResults[position - 1]
             return (
               <div key={position} className="flex items-center justify-between bg-bg-primary/30 rounded-md p-2.5">
@@ -105,17 +106,17 @@ const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading
                         {result.type === '阳' ? '━━━' : '━ ━'}
                       </span>
                       {result.isMoving && (
-                        <span className="text-fire text-xs">动</span>
+                        <span className="text-fire text-xs">{t.LIUYAO_UI.movingMark}</span>
                       )}
                       <span className={`text-xs ${result.type === '阳' ? 'text-gold' : 'text-text-muted'}`}>
-                        {result.type}爻{result.isMoving ? '(动)' : ''}
+                        {result.type}{t.LIUYAO_UI.yaoSuffix}{result.isMoving ? t.LIUYAO_UI.movingSuffix : ''}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-text-muted text-xs">未摇</span>
+                    <span className="text-text-muted text-xs">{t.LIUYAO_UI.notTossed}</span>
                   )}
                   <Button size="sm" onClick={() => handleToss(position - 1)} disabled={isAutoTossing}>
-                    摇
+                    {t.LIUYAO_UI.tossBtn}
                   </Button>
                 </div>
               </div>
@@ -128,7 +129,7 @@ const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading
             loading={loading}
             disabled={!allTossed}
           >
-            排卦分析
+            {t.LIUYAO_UI.submitBtn}
           </Button>
         </div>
       )}
@@ -136,9 +137,9 @@ const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading
       {mode === 'time' && (
         <div className="space-y-4">
           <div className="bg-bg-primary/30 rounded-md p-4">
-            <p className="text-text-secondary text-sm mb-2">时间起卦法</p>
+            <p className="text-text-secondary text-sm mb-2">{t.LIUYAO_UI.timeMethodTitle}</p>
             <p className="text-text-muted text-xs leading-relaxed">
-              基于当前时间自动计算卦象。上卦 = (年支数 + 月数 + 日数) % 8，下卦 = (年支数 + 月数 + 日数 + 时支数) % 8，动爻 = (年支数 + 月数 + 日数 + 时支数) % 6
+              {t.LIUYAO_UI.timeMethodDesc}
             </p>
           </div>
           <Button
@@ -146,7 +147,7 @@ const YaoGuaForm: React.FC<YaoGuaFormProps> = ({ onResult, onTimeResult, loading
             onClick={handleTimeSubmit}
             loading={loading}
           >
-            以当前时间起卦
+            {t.LIUYAO_UI.timeSubmitBtn}
           </Button>
         </div>
       )}

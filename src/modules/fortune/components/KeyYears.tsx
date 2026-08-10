@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card } from '../../../components/common'
 import { LEVEL_COLORS } from '../utils/constants'
-import { FORTUNE } from '../../../locales/zh-CN'
+import { useTranslation } from '../../../i18n'
 import type { YearFortune } from '../utils/calculation'
 
 interface KeyYearsProps {
@@ -9,13 +9,14 @@ interface KeyYearsProps {
 }
 
 const KeyYears: React.FC<KeyYearsProps> = ({ fortunes }) => {
+  const t = useTranslation()
   const keyFortunes = fortunes.filter(f => f.isKeyYear)
 
   if (keyFortunes.length === 0) return null
 
   return (
     <Card hover={false}>
-      <h3 className="text-xl font-serif text-gold mb-4">{FORTUNE.keyYearsTitle}</h3>
+      <h3 className="text-xl font-serif text-gold mb-4">{t.FORTUNE.keyYearsTitle}</h3>
 
       <div className="space-y-3">
         {keyFortunes.map((f) => {
@@ -27,7 +28,7 @@ const KeyYears: React.FC<KeyYearsProps> = ({ fortunes }) => {
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-text-primary font-medium">
-                  {f.year}年 ({f.ganZhi})
+                  {f.year}{t.FORTUNE.yearSuffix} ({f.ganZhi})
                 </span>
                 <span className={`text-xs px-2 py-0.5 rounded ${colors.text}`}>
                   {f.level}

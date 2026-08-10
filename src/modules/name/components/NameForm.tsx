@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Card } from '../../../components/common'
 import { getStrokeCount } from '../utils/strokeLookup'
+import { useTranslation } from '../../../i18n'
 
 interface NameFormProps {
   onSubmit: (name: string) => void
@@ -9,6 +10,7 @@ interface NameFormProps {
 }
 
 const NameForm: React.FC<NameFormProps> = ({ onSubmit, loading, hasBazi }) => {
+  const t = useTranslation()
   const [name, setName] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -24,49 +26,49 @@ const NameForm: React.FC<NameFormProps> = ({ onSubmit, loading, hasBazi }) => {
 
   return (
     <Card hover={false}>
-      <h3 className="text-lg font-serif text-gold mb-4">输入姓名</h3>
+      <h3 className="text-lg font-serif text-gold mb-4">{t.NAME_UI.inputTitle}</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-text-secondary text-sm mb-2">姓名</label>
+          <label className="block text-text-secondary text-sm mb-2">{t.NAME_UI.nameLabel}</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="请输入姓名（2-4个字）"
+            placeholder={t.NAME_UI.namePlaceholder}
             maxLength={4}
             className="w-full bg-bg-primary/50 border border-gold/20 rounded-md px-4 py-2.5 text-text-primary placeholder-text-muted focus:border-gold focus:outline-none transition-colors"
           />
-          <p className="text-text-muted text-xs mt-1">支持单姓单名、单姓双名、复姓名字</p>
+          <p className="text-text-muted text-xs mt-1">{t.NAME_UI.nameFormatHint}</p>
         </div>
 
         {chars.length > 0 && (
           <div className="bg-bg-primary/30 rounded-md p-3">
-            <p className="text-text-secondary text-xs mb-2">康熙字典笔画：</p>
+            <p className="text-text-secondary text-xs mb-2">{t.NAME_UI.kangxiStrokesLabel}</p>
             <div className="flex gap-3">
               {charStrokes.map((cs, i) => (
                 <div key={i} className="text-center">
                   <div className="text-text-primary text-lg font-serif">{cs.char}</div>
                   <div className={`text-sm ${cs.stroke === null ? 'text-fire' : 'text-gold'}`}>
-                    {cs.stroke === null ? '未知' : `${cs.stroke}画`}
+                    {cs.stroke === null ? t.NAME_UI.unknownStroke : `${cs.stroke}${t.NAME_UI.strokeSuffix}`}
                   </div>
                 </div>
               ))}
             </div>
             {hasUnknownStroke && (
-              <p className="text-fire text-xs mt-2">存在无法识别笔画的字符，测试结果可能不准确</p>
+              <p className="text-fire text-xs mt-2">{t.NAME_UI.unknownStrokeWarn}</p>
             )}
           </div>
         )}
 
         {hasBazi && (
           <div className="bg-wood/10 border border-wood/20 rounded-md p-3">
-            <p className="text-wood text-sm">✓ 已关联八字排盘数据，将进行八字匹配分析</p>
+            <p className="text-wood text-sm">{t.NAME_UI.hasBaziHint}</p>
           </div>
         )}
 
         {!hasBazi && (
           <div className="bg-gold/10 border border-gold/20 rounded-md p-3">
-            <p className="text-gold/70 text-sm">如需八字匹配分析，请先在八字排盘模块输入出生信息</p>
+            <p className="text-gold/70 text-sm">{t.NAME_UI.noBaziHint}</p>
           </div>
         )}
 
@@ -76,7 +78,7 @@ const NameForm: React.FC<NameFormProps> = ({ onSubmit, loading, hasBazi }) => {
           disabled={name.trim().length < 2 || hasUnknownStroke}
           className="w-full"
         >
-          开始姓名测试
+          {t.NAME_UI.startTest}
         </Button>
       </form>
     </Card>

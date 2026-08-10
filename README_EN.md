@@ -13,6 +13,8 @@ A fully functional web tool for traditional Chinese metaphysics research, intend
 - ✍️ **Name Test** - Five-Grid numerology analysis, Three-Talent configuration, Bazi matching, and layered stroke lookup (predefined rules → cnchar → local database)
 - 📅 **Auspicious Date Selection** - Almanac auspicious/inauspicious queries, date filtering, and personalized Bazi recommendations
 - ☯️ **Liu Yao Divination** - Manual or time-based hexagram casting, with original, mutual, and changed hexagrams plus body-use analysis
+- 🌐 **Bilingual (CN/EN)** - Full Chinese/English switching across the app; metaphysics terms keep the "Chinese (Pinyin)" form
+- ☀️ **True Solar Time Correction** - Auto-corrects true solar time from birthplace longitude and timezone, supporting global cities and daylight saving time
 
 ## 🛠️ Tech Stack
 
@@ -26,6 +28,7 @@ A fully functional web tool for traditional Chinese metaphysics research, intend
 | Charts | Recharts | 2 |
 | Metaphysics Calculation | iztro | 2 |
 | Lunar Calendar | lunar-typescript | 1 |
+| True Solar Time | true-solar-time | 1 |
 | Chinese Character Strokes | cnchar | 3 |
 | Date Handling | dayjs | 1 |
 | Icons | Lucide React | 0.294+ |
@@ -135,6 +138,16 @@ The stroke lookup uses a layered fallback strategy to ensure Chinese character c
 
 Birth dates are stored as `datetime-local` format strings to avoid UTC+8 offset issues caused by `toISOString()`.
 
+### True Solar Time Correction
+
+Once a birthplace is selected, the true solar time is auto-corrected; both Bazi and Zi Wei charts use the corrected time:
+
+1. **Location data** - Chinese provinces/cities come from the `true-solar-time` library's built-in data; overseas cities supplement longitude and IANA timezone
+2. **Timezone & DST** - Wall-clock time is converted to absolute UTC via the browser's `Intl.DateTimeFormat` (IANA timezone database), which automatically handles DST transitions (e.g., America/New_York's EST/EDT)
+3. **Solar time calculation** - Based on the `true-solar-time` library (Jean Meeus astronomical algorithm) for the equation of time and longitude correction: True Solar Time = Standard Time + (longitude − standard meridian)×4 + Equation of Time
+4. **Standard meridian derivation** - The standard meridian is derived from the actual UTC offset at that moment (including DST), so winter/summer switch automatically
+5. **Language adaptation** - When switched to English, provinces show standard English names, Chinese cities show Pinyin, and overseas cities show English names
+
 ## ⚠️ Disclaimer
 
 This project is purely technical code intended to demonstrate the algorithmic logic in traditional Chinese metaphysics. All chart results are for cultural symbol display only.
@@ -151,5 +164,5 @@ GNU Affero General Public License v3.0 (AGPL-3.0)
 
 ---
 
-**Version**: v1.6.0  
-**Updated**: 2026-08-07
+**Version**: v1.7.0  
+**Updated**: 2026-08-10

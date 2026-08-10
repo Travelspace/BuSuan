@@ -1,12 +1,14 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { 
-  BirthInfo, 
-  BaziResult, 
-  ZiweiResult, 
-  LiuyaoResult, 
-  ModuleType 
+import type {
+  BirthInfo,
+  BaziResult,
+  ZiweiResult,
+  LiuyaoResult,
+  ModuleType
 } from '../types'
+
+export type Language = 'zh-CN' | 'en-US'
 
 interface AppState {
   birthInfo: BirthInfo
@@ -14,12 +16,14 @@ interface AppState {
   ziweiResult: ZiweiResult | null
   liuyaoResult: LiuyaoResult | null
   activeModule: ModuleType
-  
+  language: Language
+
   setBirthInfo: (info: Partial<BirthInfo>) => void
   setBaziResult: (result: BaziResult | null) => void
   setZiweiResult: (result: ZiweiResult | null) => void
   setLiuyaoResult: (result: LiuyaoResult | null) => void
   setActiveModule: (module: ModuleType) => void
+  setLanguage: (language: Language) => void
   resetAll: () => void
 }
 
@@ -35,6 +39,7 @@ const initialState = {
   ziweiResult: null,
   liuyaoResult: null,
   activeModule: 'profile' as ModuleType,
+  language: 'zh-CN' as Language,
 }
 
 export const useAppStore = create<AppState>()(
@@ -52,9 +57,11 @@ export const useAppStore = create<AppState>()(
       setZiweiResult: (result) => set({ ziweiResult: result }),
       
       setLiuyaoResult: (result) => set({ liuyaoResult: result }),
-      
+
       setActiveModule: (module) => set({ activeModule: module }),
-      
+
+      setLanguage: (language) => set({ language }),
+
       resetAll: () => set(initialState),
     }),
     {
@@ -63,6 +70,7 @@ export const useAppStore = create<AppState>()(
         birthInfo: state.birthInfo,
         baziResult: state.baziResult,
         ziweiResult: state.ziweiResult,
+        language: state.language,
       }),
     }
   )

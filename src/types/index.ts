@@ -31,6 +31,10 @@ export interface BirthInfo {
   calendar: CalendarType
   gender: Gender
   location?: string
+  /** 出生地经度 (东经为正, 西经为负), 用于真太阳时校正 */
+  longitude?: number
+  /** 出生地 IANA 时区名 (如 "Asia/Shanghai", "America/New_York"), 用于真太阳时校正 */
+  timezone?: string
 }
 
 export interface Pillar {

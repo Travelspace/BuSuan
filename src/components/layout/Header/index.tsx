@@ -1,31 +1,23 @@
 import React, { useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { 
-  UserCircle, 
-  Calendar, 
-  Hash, 
-  Sparkles, 
-  User, 
-  Compass, 
-  Hexagon 
+import {
+  UserCircle,
+  Calendar,
+  Hash,
+  Sparkles,
+  User,
+  Compass,
+  Hexagon,
+  Languages
 } from 'lucide-react'
 import { useAppStore } from '../../../store'
-import { MODULE_NAMES } from '../../../utils/constants'
+import { useTranslation } from '../../../i18n'
 import type { ModuleType } from '../../../types'
 
-const NAV_ITEMS: { path: ModuleType; icon: React.ReactNode; label: string }[] = [
-  { path: 'profile', icon: <UserCircle size={20} />, label: MODULE_NAMES.profile },
-  { path: 'bazi', icon: <Hexagon size={20} />, label: MODULE_NAMES.bazi },
-  { path: 'ziwei', icon: <Sparkles size={20} />, label: MODULE_NAMES.ziwei },
-  { path: 'fortune', icon: <Compass size={20} />, label: MODULE_NAMES.fortune },
-  { path: 'name', icon: <User size={20} />, label: MODULE_NAMES.name },
-  { path: 'calendar', icon: <Calendar size={20} />, label: MODULE_NAMES.calendar },
-  { path: 'liuyao', icon: <Hash size={20} />, label: MODULE_NAMES.liuyao },
-]
-
 const Header: React.FC = () => {
-  const { activeModule, setActiveModule } = useAppStore()
+  const { activeModule, setActiveModule, language, setLanguage } = useAppStore()
   const location = useLocation()
+  const t = useTranslation()
 
   useEffect(() => {
     const path = location.pathname.replace(/^\/BuSuan\//, '').replace(/^\//, '') || 'profile'
@@ -37,6 +29,10 @@ const Header: React.FC = () => {
 
   const navItems = NAV_ITEMS
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'zh-CN' ? 'en-US' : 'zh-CN')
+  }
+
   return (
     <header className="bg-bg-secondary/80 backdrop-blur-sm border-b border-gold/20 sticky top-0 z-40">
       <div className="container mx-auto px-4">
@@ -47,7 +43,7 @@ const Header: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-serif text-gold">BuSuan</h1>
-              <p className="text-xs text-text-muted">传统命理文化研究工具</p>
+              <p className="text-xs text-text-muted">传统命理研究工具</p>
             </div>
           </div>
 
@@ -71,14 +67,38 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          <div className="lg:hidden">
-            <MobileNav navItems={navItems} setActiveModule={setActiveModule} />
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={toggleLanguage}
+              title={t.HEADER_UI.langSwitchTitle}
+              className="flex items-center justify-center w-9 h-9 rounded-button border border-gold/30 text-gold hover:bg-gold/10 transition-colors"
+              aria-label={t.HEADER_UI.langSwitchTitle}
+            >
+              <Languages size={18} />
+              <span className="ml-1 text-xs font-medium">
+                {language === 'zh-CN' ? 'EN' : '中'}
+              </span>
+            </button>
+
+            <div className="lg:hidden">
+              <MobileNav navItems={navItems} setActiveModule={setActiveModule} />
+            </div>
           </div>
         </div>
       </div>
     </header>
   )
 }
+
+const NAV_ITEMS: { path: ModuleType; icon: React.ReactNode; label: string }[] = [
+  { path: 'profile', icon: <UserCircle size={20} />, label: '信息' },
+  { path: 'bazi', icon: <Hexagon size={20} />, label: '八字' },
+  { path: 'ziwei', icon: <Sparkles size={20} />, label: '紫微' },
+  { path: 'fortune', icon: <Compass size={20} />, label: '运势' },
+  { path: 'name', icon: <User size={20} />, label: '姓名' },
+  { path: 'calendar', icon: <Calendar size={20} />, label: '黄历' },
+  { path: 'liuyao', icon: <Hash size={20} />, label: '六爻' },
+]
 
 interface MobileNavProps {
   navItems: { path: ModuleType; icon: React.ReactNode; label: string }[]

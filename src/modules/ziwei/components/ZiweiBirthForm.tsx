@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Card } from '../../../components/common'
 import { useAppStore } from '../../../store'
-import { SHICHEN_MAP } from '../../bazi/utils/constants'
+import { useTranslation } from '../../../i18n'
 import { dateToBazi } from '../../bazi/utils/calculation'
 import type { BirthInfo } from '../../../types'
 
@@ -12,6 +12,7 @@ interface ZiweiBirthFormProps {
 
 const ZiweiBirthForm: React.FC<ZiweiBirthFormProps> = ({ onSubmit, loading = false }) => {
   const { birthInfo } = useAppStore()
+  const t = useTranslation()
 
   const hasInfo = !!birthInfo.date
 
@@ -25,9 +26,9 @@ const ZiweiBirthForm: React.FC<ZiweiBirthFormProps> = ({ onSubmit, loading = fal
     return (
       <Card hover={false}>
         <div className="text-center py-8">
-          <p className="text-text-muted mb-4">请先在「信息填写」模块中录入出生信息</p>
+          <p className="text-text-muted mb-4">{t.BAZI_UI.goFillHint}</p>
           <Button variant="secondary" onClick={() => window.location.href = '/profile'}>
-            前往填写
+            {t.BAZI_UI.goFill}
           </Button>
         </div>
       </Card>
@@ -36,31 +37,31 @@ const ZiweiBirthForm: React.FC<ZiweiBirthFormProps> = ({ onSubmit, loading = fal
 
   return (
     <Card hover={false}>
-      <h3 className="text-xl font-serif text-gold mb-6">出生信息</h3>
+      <h3 className="text-xl font-serif text-gold mb-6">{t.BAZI_UI.birthInfoTitle}</h3>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-3">
           {birthInfo.name && (
             <div className="flex justify-between text-sm">
-              <span className="text-text-muted">姓名</span>
+              <span className="text-text-muted">{t.PROFILE_UI.nameLabel}</span>
               <span className="text-text-primary">{birthInfo.name}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">
-            <span className="text-text-muted">性别</span>
-            <span className="text-text-primary">{birthInfo.gender === 'male' ? '男' : '女'}</span>
+            <span className="text-text-muted">{t.PROFILE_UI.genderLabel}</span>
+            <span className="text-text-primary">{birthInfo.gender === 'male' ? t.PROFILE_UI.male : t.PROFILE_UI.female}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-text-muted">日历类型</span>
-            <span className="text-text-primary">{birthInfo.calendar === 'solar' ? '公历' : '农历'}</span>
+            <span className="text-text-muted">{t.PROFILE_UI.calendarTypeLabel}</span>
+            <span className="text-text-primary">{birthInfo.calendar === 'solar' ? t.PROFILE_UI.solar : t.PROFILE_UI.lunar}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-text-muted">生辰八字</span>
-            <span className="text-text-primary">{dateToBazi(birthInfo.date, birthInfo.calendar)}</span>
+            <span className="text-text-muted">{t.ZIWEI_UI.ganZhiLabel}</span>
+            <span className="text-text-primary">{dateToBazi(birthInfo.date, birthInfo.calendar, birthInfo.longitude, birthInfo.timezone)}</span>
           </div>
           {birthInfo.location && (
             <div className="flex justify-between text-sm">
-              <span className="text-text-muted">出生地点</span>
+              <span className="text-text-muted">{t.PROFILE_UI.birthLocationLabel}</span>
               <span className="text-text-primary">{birthInfo.location}</span>
             </div>
           )}
@@ -68,14 +69,14 @@ const ZiweiBirthForm: React.FC<ZiweiBirthFormProps> = ({ onSubmit, loading = fal
 
         <div className="pt-2">
           <Button type="submit" loading={loading} className="w-full">
-            排紫微命盘
+            {t.ZIWEI_UI.chartTitle}
           </Button>
         </div>
 
         <div className="border-t border-gold/10 pt-4">
-          <p className="text-text-muted text-xs mb-2">时辰对照表：</p>
+          <p className="text-text-muted text-xs mb-2">{t.PROFILE_UI.shichenTableTitle}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
-            {SHICHEN_MAP.map((item) => (
+            {t.SHICHEN_MAP.map((item) => (
               <div
                 key={item.index}
                 className="text-xs text-text-secondary bg-bg-secondary/30 rounded px-2 py-1 flex justify-between"

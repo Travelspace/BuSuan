@@ -1,28 +1,30 @@
 import React from 'react'
 import { Card } from '../../../components/common'
 import type { NameResult } from '../../../types'
-import { GE_LEVEL_COLORS, GE_LEVEL_BG, WUXING_COLORS, WUXING_BG_COLORS, SCORE_LEVEL_MAP } from '../utils/constants'
+import { GE_LEVEL_COLORS, GE_LEVEL_BG, WUXING_COLORS, WUXING_BG_COLORS } from '../utils/constants'
+import { useTranslation } from '../../../i18n'
 
 interface FiveGeDisplayProps {
   result: NameResult
 }
 
 const FiveGeDisplay: React.FC<FiveGeDisplayProps> = ({ result }) => {
+  const t = useTranslation()
   const geList = [
-    { key: 'tianGe' as const, label: '天格', desc: '祖业运' },
-    { key: 'renGe' as const, label: '人格', desc: '主运' },
-    { key: 'diGe' as const, label: '地格', desc: '前运' },
-    { key: 'waiGe' as const, label: '外格', desc: '副运' },
-    { key: 'zongGe' as const, label: '总格', desc: '后运' },
+    { key: 'tianGe' as const, label: t.NAME_UI.tianGe, desc: t.NAME_UI.tianGeDesc },
+    { key: 'renGe' as const, label: t.NAME_UI.renGe, desc: t.NAME_UI.renGeDesc },
+    { key: 'diGe' as const, label: t.NAME_UI.diGe, desc: t.NAME_UI.diGeDesc },
+    { key: 'waiGe' as const, label: t.NAME_UI.waiGe, desc: t.NAME_UI.waiGeDesc },
+    { key: 'zongGe' as const, label: t.NAME_UI.zongGe, desc: t.NAME_UI.zongGeDesc },
   ]
 
-  const scoreInfo = SCORE_LEVEL_MAP[result.level]
+  const scoreInfo = t.SCORE_LEVEL_MAP[result.level]
 
   return (
     <div className="space-y-4">
       <Card hover={false}>
         <div className="text-center mb-6">
-          <div className="text-text-muted text-sm mb-1">综合评分</div>
+          <div className="text-text-muted text-sm mb-1">{t.NAME_UI.scoreLabel}</div>
           <div className={`text-5xl font-serif ${scoreInfo.color}`}>{result.score}</div>
           <div className={`text-lg ${scoreInfo.color}`}>{scoreInfo.label}</div>
         </div>
@@ -50,6 +52,7 @@ const FiveGeDisplay: React.FC<FiveGeDisplayProps> = ({ result }) => {
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
         {geList.map(({ key, label, desc }) => {
           const ge = result.fiveGe[key]
+          const meanings = t.GE_MEANINGS[ge.strokes]?.meanings || ge.meaning
           return (
             <Card key={key} hover={false} className="text-center">
               <div className="text-text-muted text-xs mb-1">{label}·{desc}</div>
@@ -63,7 +66,7 @@ const FiveGeDisplay: React.FC<FiveGeDisplayProps> = ({ result }) => {
                 {ge.wuXing}
               </div>
               <div className="text-text-secondary text-xs mt-2 leading-relaxed">
-                {ge.meaning.join('、')}
+                {meanings.join('、')}
               </div>
             </Card>
           )

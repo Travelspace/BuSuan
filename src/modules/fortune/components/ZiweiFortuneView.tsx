@@ -1,18 +1,26 @@
 import React, { useState } from 'react'
 import { Card, Modal } from '../../../components/common'
 import { LEVEL_COLORS } from '../utils/constants'
-import { PALACE_DESCRIPTIONS, MAJOR_STAR_DESCRIPTIONS, MUTAGEN_COLORS } from '../../ziwei/utils/constants'
-import { ZIWEI_FORTUNE, PALACE_DOMAIN_LABELS } from '../../../locales/zh-CN'
+import { MUTAGEN_COLORS } from '../../ziwei/utils/constants'
+import { useTranslation } from '../../../i18n'
 import type { PalaceFortune, ZiweiFortuneResult } from '../utils/ziweiCalculation'
+
+const SIHUA_LABEL_MAP = (t: ReturnType<typeof useTranslation>): Record<string, string> => ({
+  '禄': t.ZIWEI_FORTUNE.sihuaLu.label,
+  '权': t.ZIWEI_FORTUNE.sihuaQuan.label,
+  '科': t.ZIWEI_FORTUNE.sihuaKe.label,
+  '忌': t.ZIWEI_FORTUNE.sihuaJi.label,
+})
 
 interface PalaceFortuneCardProps {
   palace: PalaceFortune
 }
 
 const PalaceFortuneCard: React.FC<PalaceFortuneCardProps> = ({ palace }) => {
+  const t = useTranslation()
   const [showDetail, setShowDetail] = useState(false)
   const colors = LEVEL_COLORS[palace.level]
-  const domain = PALACE_DOMAIN_LABELS[palace.name]
+  const domain = t.PALACE_DOMAIN_LABELS[palace.name]
 
   return (
     <>
@@ -46,7 +54,7 @@ const PalaceFortuneCard: React.FC<PalaceFortuneCardProps> = ({ palace }) => {
             </span>
           ))}
           {palace.majorStars.length === 0 && (
-            <span className="text-xs text-text-muted">{ZIWEI_FORTUNE.noMajorStar}</span>
+            <span className="text-xs text-text-muted">{t.ZIWEI_FORTUNE.noMajorStar}</span>
           )}
         </div>
 
@@ -59,7 +67,7 @@ const PalaceFortuneCard: React.FC<PalaceFortuneCardProps> = ({ palace }) => {
             }}
           />
         </div>
-        <div className="text-right text-[10px] text-text-muted mt-1">{palace.score}分</div>
+        <div className="text-right text-[10px] text-text-muted mt-1">{palace.score}{t.ZIWEI_FORTUNE.scoreSuffix}</div>
       </div>
 
       <Modal
@@ -73,20 +81,20 @@ const PalaceFortuneCard: React.FC<PalaceFortuneCardProps> = ({ palace }) => {
             <span className={`text-lg px-3 py-1 rounded border ${colors.bg} ${colors.text} ${colors.border}`}>
               {palace.level}
             </span>
-            <span className="text-text-secondary text-sm">{ZIWEI_FORTUNE.scoreLabel}：{palace.score}/100</span>
+            <span className="text-text-secondary text-sm">{t.ZIWEI_FORTUNE.scoreLabel}：{palace.score}/100</span>
             <span className="text-text-muted text-xs">{palace.heavenlyStem}{palace.earthlyBranch}</span>
             {palace.isBodyPalace && (
-              <span className="px-2 py-0.5 rounded bg-fire/20 text-fire text-xs">{ZIWEI_FORTUNE.bodyPalaceLabel}</span>
+              <span className="px-2 py-0.5 rounded bg-fire/20 text-fire text-xs">{t.ZIWEI_FORTUNE.bodyPalaceLabel}</span>
             )}
           </div>
 
           <div className="p-3 bg-bg-secondary/30 rounded-lg border border-gold/10">
-            <p className="text-text-muted text-xs">{PALACE_DESCRIPTIONS[palace.name] || ''}</p>
+            <p className="text-text-muted text-xs">{t.PALACE_DESCRIPTIONS[palace.name] || ''}</p>
           </div>
 
           {palace.majorStars.length > 0 && (
             <div>
-              <h4 className="text-gold text-sm font-medium mb-2">主星</h4>
+              <h4 className="text-gold text-sm font-medium mb-2">{t.ZIWEI_FORTUNE.majorStarsTitle}</h4>
               <div className="space-y-2">
                 {palace.majorStars.map((star, i) => (
                   <div key={i} className="p-2 bg-bg-secondary/30 rounded border border-gold/10">
@@ -99,13 +107,13 @@ const PalaceFortuneCard: React.FC<PalaceFortuneCardProps> = ({ palace }) => {
                           const colorClass = MUTAGEN_COLORS[mutagen] || ''
                           return (
                             <span key={j} className={`text-xs px-1.5 py-0.5 rounded border ${colorClass}`}>
-                              化{mutagen}
+                              {SIHUA_LABEL_MAP(t)[mutagen] || mutagen}
                             </span>
                           )
                         })}
                     </div>
                     <p className="text-text-muted text-xs mt-1">
-                      {MAJOR_STAR_DESCRIPTIONS[star] || ''}
+                      {t.MAJOR_STAR_DESCRIPTIONS[star] || ''}
                     </p>
                   </div>
                 ))}
@@ -115,7 +123,7 @@ const PalaceFortuneCard: React.FC<PalaceFortuneCardProps> = ({ palace }) => {
 
           {palace.minorStars.length > 0 && (
             <div>
-              <h4 className="text-text-secondary text-sm font-medium mb-2">{ZIWEI_FORTUNE.minorStarsTitle}</h4>
+              <h4 className="text-text-secondary text-sm font-medium mb-2">{t.ZIWEI_FORTUNE.minorStarsTitle}</h4>
               <div className="flex flex-wrap gap-1.5">
                 {palace.minorStars.map((star, i) => (
                   <span
@@ -134,12 +142,12 @@ const PalaceFortuneCard: React.FC<PalaceFortuneCardProps> = ({ palace }) => {
           </div>
 
           <div className="p-3 bg-bg-secondary/30 rounded-lg border border-gold/10">
-            <p className="text-gold text-sm">{ZIWEI_FORTUNE.advicePrefix} {palace.advice}</p>
+            <p className="text-gold text-sm">{t.ZIWEI_FORTUNE.advicePrefix} {palace.advice}</p>
           </div>
 
           {palace.decadal && palace.decadal.range[0] > 0 && (
             <div className="text-xs text-text-muted">
-              {ZIWEI_FORTUNE.decadalPrefix}：{palace.decadal.heavenlyStem}{palace.decadal.earthlyBranch}（{palace.decadal.range[0]}-{palace.decadal.range[1]}{ZIWEI_FORTUNE.ageSuffix}）
+              {t.ZIWEI_FORTUNE.decadalPrefix}：{palace.decadal.heavenlyStem}{palace.decadal.earthlyBranch}（{palace.decadal.range[0]}-{palace.decadal.range[1]}{t.ZIWEI_FORTUNE.ageSuffix}）
             </div>
           )}
         </div>
@@ -153,6 +161,7 @@ interface ZiweiFortuneViewProps {
 }
 
 const ZiweiFortuneView: React.FC<ZiweiFortuneViewProps> = ({ result }) => {
+  const t = useTranslation()
   const { palaces, sihua, currentDecadal, overallScore, overallLevel, soulStar, bodyStar, fiveElementsClass, currentAge } = result
   const overallColors = LEVEL_COLORS[overallLevel]
 
@@ -166,24 +175,24 @@ const ZiweiFortuneView: React.FC<ZiweiFortuneViewProps> = ({ result }) => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-6 text-sm">
             <div>
-              <span className="text-text-muted">{ZIWEI_FORTUNE.soulStarLabel}</span>
+              <span className="text-text-muted">{t.ZIWEI_FORTUNE.soulStarLabel}</span>
               <div className="text-gold font-serif text-lg">{soulStar}</div>
             </div>
             <div>
-              <span className="text-text-muted">身主</span>
+              <span className="text-text-muted">{t.ZIWEI_FORTUNE.bodyStarLabel}</span>
               <div className="text-gold font-serif text-lg">{bodyStar}</div>
             </div>
             <div>
-              <span className="text-text-muted">{ZIWEI_FORTUNE.fiveElementsClassLabel}</span>
+              <span className="text-text-muted">{t.ZIWEI_FORTUNE.fiveElementsClassLabel}</span>
               <div className="text-gold font-serif text-lg">{fiveElementsClass}</div>
             </div>
             <div>
-              <span className="text-text-muted">{ZIWEI_FORTUNE.currentAgeLabel}</span>
-              <div className="text-text-primary text-lg">{currentAge}{ZIWEI_FORTUNE.ageSuffix}</div>
+              <span className="text-text-muted">{t.ZIWEI_FORTUNE.currentAgeLabel}</span>
+              <div className="text-text-primary text-lg">{currentAge}{t.ZIWEI_FORTUNE.ageSuffix}</div>
             </div>
           </div>
           <div className="text-center">
-            <span className="text-text-muted text-xs">{ZIWEI_FORTUNE.overallScoreLabel}</span>
+            <span className="text-text-muted text-xs">{t.ZIWEI_FORTUNE.overallScoreLabel}</span>
             <div className={`text-2xl font-serif ${overallColors.text}`}>{overallScore}</div>
             <span className={`text-xs px-2 py-0.5 rounded ${overallColors.bg} ${overallColors.text} border ${overallColors.border}`}>
               {overallLevel}
@@ -194,11 +203,11 @@ const ZiweiFortuneView: React.FC<ZiweiFortuneViewProps> = ({ result }) => {
 
       {currentDecadal && (
         <Card hover={false}>
-          <h3 className="text-xl font-serif text-gold mb-3">{ZIWEI_FORTUNE.currentDecadalTitle}</h3>
+          <h3 className="text-xl font-serif text-gold mb-3">{t.ZIWEI_FORTUNE.currentDecadalTitle}</h3>
           <div className="flex items-center gap-4">
             <div className="text-gold font-serif text-lg">{currentDecadal.ganZhi}</div>
             <div className="text-text-secondary text-sm">
-              {currentDecadal.range[0]}-{currentDecadal.range[1]}{ZIWEI_FORTUNE.ageSuffix} · {currentDecadal.palaceName}
+              {currentDecadal.range[0]}-{currentDecadal.range[1]}{t.ZIWEI_FORTUNE.ageSuffix} · {currentDecadal.palaceName}
             </div>
             <div className="flex gap-1.5">
               {currentDecadal.majorStars.map((star, i) => (
@@ -212,13 +221,13 @@ const ZiweiFortuneView: React.FC<ZiweiFortuneViewProps> = ({ result }) => {
       )}
 
       <Card hover={false}>
-        <h3 className="text-xl font-serif text-gold mb-4">{ZIWEI_FORTUNE.sihuaTitle}</h3>
+        <h3 className="text-xl font-serif text-gold mb-4">{t.ZIWEI_FORTUNE.sihuaTitle}</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {([
-            { key: '禄', data: sihua.lu, label: ZIWEI_FORTUNE.sihuaLu.label, desc: ZIWEI_FORTUNE.sihuaLu.desc },
-            { key: '权', data: sihua.quan, label: ZIWEI_FORTUNE.sihuaQuan.label, desc: ZIWEI_FORTUNE.sihuaQuan.desc },
-            { key: '科', data: sihua.ke, label: ZIWEI_FORTUNE.sihuaKe.label, desc: ZIWEI_FORTUNE.sihuaKe.desc },
-            { key: '忌', data: sihua.ji, label: ZIWEI_FORTUNE.sihuaJi.label, desc: ZIWEI_FORTUNE.sihuaJi.desc },
+            { key: '禄', data: sihua.lu, label: t.ZIWEI_FORTUNE.sihuaLu.label, desc: t.ZIWEI_FORTUNE.sihuaLu.desc },
+            { key: '权', data: sihua.quan, label: t.ZIWEI_FORTUNE.sihuaQuan.label, desc: t.ZIWEI_FORTUNE.sihuaQuan.desc },
+            { key: '科', data: sihua.ke, label: t.ZIWEI_FORTUNE.sihuaKe.label, desc: t.ZIWEI_FORTUNE.sihuaKe.desc },
+            { key: '忌', data: sihua.ji, label: t.ZIWEI_FORTUNE.sihuaJi.label, desc: t.ZIWEI_FORTUNE.sihuaJi.desc },
           ] as const).map(({ key, data, label, desc }) => {
             const colorClass = MUTAGEN_COLORS[key] || ''
             return (
@@ -234,7 +243,7 @@ const ZiweiFortuneView: React.FC<ZiweiFortuneViewProps> = ({ result }) => {
       </Card>
 
       <Card hover={false}>
-        <h3 className="text-xl font-serif text-gold mb-6">{ZIWEI_FORTUNE.palacesTitle}</h3>
+        <h3 className="text-xl font-serif text-gold mb-6">{t.ZIWEI_FORTUNE.palacesTitle}</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {palaces.map((palace) => (
             <PalaceFortuneCard key={palace.name} palace={palace} />
@@ -243,10 +252,10 @@ const ZiweiFortuneView: React.FC<ZiweiFortuneViewProps> = ({ result }) => {
       </Card>
 
       <Card hover={false}>
-        <h3 className="text-xl font-serif text-gold mb-4">{ZIWEI_FORTUNE.rankingTitle}</h3>
+        <h3 className="text-xl font-serif text-gold mb-4">{t.ZIWEI_FORTUNE.rankingTitle}</h3>
         <div className="space-y-2">
           {sortedPalaces.map((palace, i) => {
-            const domain = PALACE_DOMAIN_LABELS[palace.name]
+            const domain = t.PALACE_DOMAIN_LABELS[palace.name]
             const colors = LEVEL_COLORS[palace.level]
             return (
               <div key={palace.name} className="flex items-center gap-3 p-2 rounded-lg hover:bg-bg-secondary/30 transition-colors">
@@ -276,24 +285,24 @@ const ZiweiFortuneView: React.FC<ZiweiFortuneViewProps> = ({ result }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card hover={false} className="border-wood/20">
-          <h4 className="text-wood text-sm font-medium mb-2">✨ 最强宫位</h4>
+          <h4 className="text-wood text-sm font-medium mb-2">{t.ZIWEI_FORTUNE.bestPalaceTitle}</h4>
           {bestPalace && (
             <div>
-              <div className="text-text-primary font-medium">{bestPalace.name} · {PALACE_DOMAIN_LABELS[bestPalace.name]?.domain}</div>
+              <div className="text-text-primary font-medium">{bestPalace.name} · {t.PALACE_DOMAIN_LABELS[bestPalace.name]?.domain}</div>
               <div className="text-text-secondary text-xs mt-1">
-                {bestPalace.majorStars.join('、') || '无主星'} · {bestPalace.score}分
+                {bestPalace.majorStars.join('、') || t.ZIWEI_FORTUNE.noMajorStar} · {bestPalace.score}{t.ZIWEI_FORTUNE.scoreSuffix}
               </div>
               <p className="text-text-muted text-xs mt-2">{bestPalace.analysis}</p>
             </div>
           )}
         </Card>
         <Card hover={false} className="border-fire/20">
-          <h4 className="text-fire text-sm font-medium mb-2">{ZIWEI_FORTUNE.worstPalaceTitle}</h4>
+          <h4 className="text-fire text-sm font-medium mb-2">{t.ZIWEI_FORTUNE.worstPalaceTitle}</h4>
           {worstPalace && (
             <div>
-              <div className="text-text-primary font-medium">{worstPalace.name} · {PALACE_DOMAIN_LABELS[worstPalace.name]?.domain}</div>
+              <div className="text-text-primary font-medium">{worstPalace.name} · {t.PALACE_DOMAIN_LABELS[worstPalace.name]?.domain}</div>
               <div className="text-text-secondary text-xs mt-1">
-                {worstPalace.majorStars.join('、') || ZIWEI_FORTUNE.noMajorStar} · {worstPalace.score}分
+                {worstPalace.majorStars.join('、') || t.ZIWEI_FORTUNE.noMajorStar} · {worstPalace.score}{t.ZIWEI_FORTUNE.scoreSuffix}
               </div>
               <p className="text-text-muted text-xs mt-2">{worstPalace.advice}</p>
             </div>

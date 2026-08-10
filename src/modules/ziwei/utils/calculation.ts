@@ -1,6 +1,7 @@
 import { astro } from 'iztro'
 import type { BirthInfo } from '../../../types'
 import { getTimeIndex } from '../../../utils/date'
+import { getCorrectedSolarTime } from '../../../utils/trueSolarTime'
 
 export interface IztroStar {
   name: string
@@ -88,21 +89,20 @@ export interface ZiweiCalcResult {
 export function calculateZiwei(birthInfo: BirthInfo): ZiweiCalcResult | null {
   if (!birthInfo.date) return null
 
-  const date = new Date(birthInfo.date)
-  const year = date.getFullYear()
-  const month = date.getMonth() + 1
-  const day = date.getDate()
-  const hour = date.getHours()
-  const minute = date.getMinutes()
+  // 真太阳时校正: 若有经度和时区, 自动校正出生时间
+  const corrected = getCorrectedSolarTime(
+    birthInfo.date, birthInfo.calendar,
+    birthInfo.longitude, birthInfo.timezone,
+  )
+  const { year, month, day, hour, minute } = corrected
   const timeIndex = getTimeIndex(hour, minute)
 
   const genderStr = birthInfo.gender === 'male' ? '男' : '女'
   const dateStr = `${year}-${month}-${day}`
 
   try {
-    const astrolabe = (birthInfo.calendar === 'solar'
-      ? astro.bySolar(dateStr, timeIndex, genderStr, true, 'zh-CN')
-      : astro.byLunar(dateStr, timeIndex, genderStr, false, true, 'zh-CN')) as IztroAstrolabe
+    // corrected 已统一为阳历时间, 一律用 bySolar
+    const astrolabe = astro.bySolar(dateStr, timeIndex, genderStr, true, 'zh-CN') as IztroAstrolabe
 
     const palaces: ZiweiPalaceData[] = astrolabe.palaces.map((p: IztroPalace) => ({
       index: p.index,

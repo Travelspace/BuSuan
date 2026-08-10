@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Card, Modal } from '../../../components/common'
-import { LEVEL_COLORS, DIMENSION_LABELS, DIMENSION_ICONS } from '../utils/constants'
+import { LEVEL_COLORS } from '../utils/constants'
 import { GAN_WUXING } from '../../../utils/wuxing'
 import { getWuXingBg } from '../../bazi/utils/constants'
-import { FORTUNE } from '../../../locales/zh-CN'
+import { useTranslation } from '../../../i18n'
 import type { YearFortune } from '../utils/calculation'
 
 interface FortuneCardProps {
@@ -12,6 +12,7 @@ interface FortuneCardProps {
 }
 
 const FortuneCard: React.FC<FortuneCardProps> = ({ fortune, isCurrentYear }) => {
+  const t = useTranslation()
   const [showDetail, setShowDetail] = useState(false)
   const colors = LEVEL_COLORS[fortune.level]
 
@@ -55,17 +56,17 @@ const FortuneCard: React.FC<FortuneCardProps> = ({ fortune, isCurrentYear }) => 
           />
         </div>
 
-        <div className="text-right text-[10px] text-text-muted mt-1">{fortune.score}分</div>
+        <div className="text-right text-[10px] text-text-muted mt-1">{fortune.score}{t.FORTUNE.scoreSuffix}</div>
 
         {isCurrentYear && (
-          <div className="text-xs text-gold mt-2 text-center">{FORTUNE.currentYear}</div>
+          <div className="text-xs text-gold mt-2 text-center">{t.FORTUNE.currentYear}</div>
         )}
       </div>
 
       <Modal
         isOpen={showDetail}
         onClose={() => setShowDetail(false)}
-        title={`${fortune.year}年 ${fortune.ganZhi} ${FORTUNE.detailTitle}`}
+        title={`${fortune.year}${t.FORTUNE.yearSuffix} ${fortune.ganZhi} ${t.FORTUNE.detailTitle}`}
         size="lg"
       >
         <div className="space-y-4">
@@ -73,7 +74,7 @@ const FortuneCard: React.FC<FortuneCardProps> = ({ fortune, isCurrentYear }) => 
             <span className={`text-lg px-3 py-1 rounded border ${colors.bg} ${colors.text} ${colors.border}`}>
               {fortune.level}
             </span>
-            <span className="text-text-secondary text-sm">{FORTUNE.scoreLabel}：{fortune.score}/100</span>
+            <span className="text-text-secondary text-sm">{t.FORTUNE.scoreLabel}：{fortune.score}/100</span>
           </div>
 
           <p className="text-text-primary text-sm">{fortune.summary}</p>
@@ -82,8 +83,8 @@ const FortuneCard: React.FC<FortuneCardProps> = ({ fortune, isCurrentYear }) => 
             {(['career', 'wealth', 'love', 'health'] as const).map((dim) => (
               <div key={dim} className="p-3 bg-bg-secondary/30 rounded-lg border border-gold/10">
                 <div className="flex items-center gap-2 mb-1">
-                  <span>{DIMENSION_ICONS[dim]}</span>
-                  <span className="text-text-primary text-sm font-medium">{DIMENSION_LABELS[dim]}</span>
+                  <span>{t.FORTUNE_DIMENSION_ICONS[dim]}</span>
+                  <span className="text-text-primary text-sm font-medium">{t.FORTUNE_DIMENSIONS[dim]}</span>
                 </div>
                 <p className="text-text-secondary text-xs">{fortune[dim]}</p>
               </div>
@@ -92,7 +93,7 @@ const FortuneCard: React.FC<FortuneCardProps> = ({ fortune, isCurrentYear }) => 
 
           {fortune.isKeyYear && fortune.keyReason && (
             <div className="p-3 bg-gold/5 rounded-lg border border-gold/20">
-              <p className="text-gold text-sm">{FORTUNE.keyYearPrefix}：{fortune.keyReason}</p>
+              <p className="text-gold text-sm">{t.FORTUNE.keyYearPrefix}：{fortune.keyReason}</p>
             </div>
           )}
         </div>
@@ -106,11 +107,12 @@ interface FortuneCardsProps {
 }
 
 const FortuneCards: React.FC<FortuneCardsProps> = ({ fortunes }) => {
+  const t = useTranslation()
   const currentYear = new Date().getFullYear()
 
   return (
     <Card hover={false}>
-      <h3 className="text-xl font-serif text-gold mb-6">{FORTUNE.decadesTitle}</h3>
+      <h3 className="text-xl font-serif text-gold mb-6">{t.FORTUNE.decadesTitle}</h3>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
         {fortunes.map((f) => (

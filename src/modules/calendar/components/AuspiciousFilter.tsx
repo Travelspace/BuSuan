@@ -1,8 +1,8 @@
 import React from 'react'
 import { Card } from '../../../components/common'
-import { EVENT_TYPES } from '../utils/constants'
 import type { DayInfo, MonthData } from '../utils/calculation'
 import { filterAuspiciousDays } from '../utils/calculation'
+import { useTranslation } from '../../../i18n'
 
 interface AuspiciousFilterProps {
   monthData: MonthData
@@ -15,16 +15,19 @@ const AuspiciousFilter: React.FC<AuspiciousFilterProps> = ({
   selectedEvent,
   onEventChange,
 }) => {
+  const t = useTranslation()
   const auspiciousDays = selectedEvent
     ? filterAuspiciousDays(monthData, selectedEvent)
     : []
 
+  const selectedEventLabel = t.EVENT_TYPES.find(e => e.key === selectedEvent)?.label || ''
+
   return (
     <Card hover={false}>
-      <h3 className="text-lg font-serif text-gold mb-4">吉日筛选</h3>
+      <h3 className="text-lg font-serif text-gold mb-4">{t.CALENDAR_UI.auspicousFilterTitle}</h3>
 
       <div className="flex flex-wrap gap-2 mb-4">
-        {EVENT_TYPES.map(event => (
+        {t.EVENT_TYPES.map(event => (
           <button
             key={event.key}
             onClick={() => onEventChange(event.key === selectedEvent ? '' : event.key)}
@@ -42,10 +45,7 @@ const AuspiciousFilter: React.FC<AuspiciousFilterProps> = ({
       {selectedEvent && (
         <div>
           <div className="text-text-secondary text-sm mb-3">
-            {monthData.year}年{monthData.month}月适合
-            <span className="text-gold">{EVENT_TYPES.find(e => e.key === selectedEvent)?.label}</span>
-            的吉日共
-            <span className="text-wood">{auspiciousDays.length}</span>天
+            {t.CALENDAR_UI.auspicousResult(monthData.year, monthData.month, selectedEventLabel, auspiciousDays.length)}
           </div>
 
           {auspiciousDays.length > 0 ? (
@@ -80,7 +80,7 @@ const AuspiciousFilter: React.FC<AuspiciousFilterProps> = ({
             </div>
           ) : (
             <div className="text-center py-4 text-text-muted text-sm">
-              本月无适合的吉日
+              {t.CALENDAR_UI.noAuspiciousDay}
             </div>
           )}
         </div>
@@ -88,7 +88,7 @@ const AuspiciousFilter: React.FC<AuspiciousFilterProps> = ({
 
       {!selectedEvent && (
         <div className="text-center py-4 text-text-muted text-sm">
-          请选择事项类型筛选吉日
+          {t.CALENDAR_UI.selectEventHint}
         </div>
       )}
     </Card>

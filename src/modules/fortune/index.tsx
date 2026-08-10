@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../components/common'
 import { useAppStore } from '../../store'
@@ -7,25 +7,26 @@ import { calculateZiweiFortune } from './utils/ziweiCalculation'
 import { calculateZiwei, type ZiweiCalcResult } from '../ziwei/utils/calculation'
 import BaziFortuneView from './components/BaziFortuneView'
 import ZiweiFortuneView from './components/ZiweiFortuneView'
-import { FORTUNE } from '../../locales/zh-CN'
+import { useTranslation } from '../../i18n'
 import type { FortuneResult } from './utils/calculation'
 import type { ZiweiFortuneResult } from './utils/ziweiCalculation'
 
 type TabType = 'bazi' | 'ziwei'
 
-const TAB_CONFIG: { key: TabType; label: string; desc: string }[] = [
-  { key: 'bazi', label: FORTUNE.tabBazi, desc: FORTUNE.baziDesc },
-  { key: 'ziwei', label: FORTUNE.tabZiwei, desc: FORTUNE.ziweiDesc },
-]
-
 const FortuneModule: React.FC = () => {
   const { birthInfo, baziResult, ziweiResult, setZiweiResult } = useAppStore()
   const navigate = useNavigate()
+  const t = useTranslation()
 
   const [activeTab, setActiveTab] = useState<TabType>('bazi')
   const [baziFortune, setBaziFortune] = useState<FortuneResult | null>(null)
   const [ziweiFortune, setZiweiFortune] = useState<ZiweiFortuneResult | null>(null)
   const [loading, setLoading] = useState(false)
+
+  const tabConfig = useMemo<{ key: TabType; label: string; desc: string }[]>(() => [
+    { key: 'bazi', label: t.FORTUNE.tabBazi, desc: t.FORTUNE.baziDesc },
+    { key: 'ziwei', label: t.FORTUNE.tabZiwei, desc: t.FORTUNE.ziweiDesc },
+  ], [t])
 
   useEffect(() => {
     if (!birthInfo.date) return
@@ -52,9 +53,9 @@ const FortuneModule: React.FC = () => {
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <div className="text-6xl mb-4 opacity-20">运</div>
-          <p className="text-text-muted text-lg mb-4">{FORTUNE.emptyNoBirthInfo}</p>
+          <p className="text-text-muted text-lg mb-4">{t.FORTUNE.emptyNoBirthInfo}</p>
           <Button variant="secondary" onClick={() => navigate('/profile')}>
-            {FORTUNE.goFill}
+            {t.FORTUNE.goFill}
           </Button>
         </div>
       </div>
@@ -66,9 +67,9 @@ const FortuneModule: React.FC = () => {
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <div className="text-6xl mb-4 opacity-20">运</div>
-          <p className="text-text-muted text-lg mb-4">{FORTUNE.emptyNoBazi}</p>
+          <p className="text-text-muted text-lg mb-4">{t.FORTUNE.emptyNoBazi}</p>
           <Button variant="secondary" onClick={() => navigate('/bazi')}>
-            {FORTUNE.goBazi}
+            {t.FORTUNE.goBazi}
           </Button>
         </div>
       </div>
@@ -78,13 +79,13 @@ const FortuneModule: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-serif text-gold mb-2">{FORTUNE.title}</h2>
-        <p className="text-text-secondary">{FORTUNE.subtitle}</p>
+        <h2 className="text-3xl font-serif text-gold mb-2">{t.FORTUNE.title}</h2>
+        <p className="text-text-secondary">{t.FORTUNE.subtitle}</p>
       </div>
 
       <div className="flex justify-center">
         <div className="inline-flex rounded-button overflow-hidden border border-gold/20">
-          {TAB_CONFIG.map((tab) => (
+          {tabConfig.map((tab) => (
             <button
               key={tab.key}
               className={`px-8 py-2.5 text-sm font-medium transition-all duration-300 ${
@@ -101,12 +102,12 @@ const FortuneModule: React.FC = () => {
       </div>
 
       <div className="text-center text-xs text-text-muted">
-        {TAB_CONFIG.find(tab => tab.key === activeTab)?.desc}
+        {tabConfig.find(tab => tab.key === activeTab)?.desc}
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <p className="text-text-muted">{FORTUNE.loading}</p>
+          <p className="text-text-muted">{t.FORTUNE.loading}</p>
         </div>
       ) : (
         <>

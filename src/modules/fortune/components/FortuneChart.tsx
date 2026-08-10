@@ -1,7 +1,6 @@
 import React from 'react'
 import { Card } from '../../../components/common'
-import { TREND_LABELS } from '../utils/constants'
-import { FORTUNE } from '../../../locales/zh-CN'
+import { useTranslation } from '../../../i18n'
 import type { FortuneResult } from '../utils/calculation'
 
 interface FortuneChartProps {
@@ -9,13 +8,14 @@ interface FortuneChartProps {
 }
 
 const FortuneChart: React.FC<FortuneChartProps> = ({ result }) => {
+  const t = useTranslation()
   const { fortunes, overallTrend, bestYear, worstYear } = result
   const maxScore = 100
   const chartHeight = 160
   const chartWidth = 800
   const padding = { top: 20, right: 30, bottom: 35, left: 40 }
 
-  const trend = TREND_LABELS[overallTrend]
+  const trend = t.FORTUNE_TREND[overallTrend]
 
   const plotWidth = chartWidth - padding.left - padding.right
   const plotHeight = chartHeight - padding.top - padding.bottom
@@ -40,7 +40,7 @@ const FortuneChart: React.FC<FortuneChartProps> = ({ result }) => {
 
   return (
     <Card hover={false}>
-      <h3 className="text-xl font-serif text-gold mb-4">{FORTUNE.chartTitle}</h3>
+      <h3 className="text-xl font-serif text-gold mb-4">{t.FORTUNE.chartTitle}</h3>
 
       <div className="flex items-center gap-4 mb-4 text-sm">
         <span className="text-text-secondary">{trend.text}</span>
@@ -132,11 +132,11 @@ const FortuneChart: React.FC<FortuneChartProps> = ({ result }) => {
       <div className="flex items-center justify-center gap-6 mt-4 text-xs text-text-muted">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-wood" />
-          <span>{FORTUNE.bestYear}: {bestYear}</span>
+          <span>{t.FORTUNE.bestYear}: {bestYear}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-fire" />
-          <span>{FORTUNE.worstYear}: {worstYear}</span>
+          <span>{t.FORTUNE.worstYear}: {worstYear}</span>
         </div>
       </div>
     </Card>

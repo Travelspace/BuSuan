@@ -1,5 +1,6 @@
 import React from 'react'
 import { Card } from '../../../components/common'
+import { useTranslation } from '../../../i18n'
 import type { GuaInfo, YaoInfo } from '../../../types'
 import { TRIGRAM_WUXING } from '../utils/constants'
 
@@ -38,6 +39,7 @@ const YaoLine: React.FC<{ yao: YaoInfo; isDong?: boolean; onClick?: () => void }
 }
 
 const GuaDisplay: React.FC<GuaDisplayProps> = ({ gua, title, dongYao = [], isActive = true }) => {
+  const t = useTranslation()
   const upperWx = TRIGRAM_WUXING[gua.upperTrigram] || '土'
   const lowerWx = TRIGRAM_WUXING[gua.lowerTrigram] || '土'
 
@@ -47,7 +49,7 @@ const GuaDisplay: React.FC<GuaDisplayProps> = ({ gua, title, dongYao = [], isAct
         <h4 className="text-gold font-serif text-lg">{title}</h4>
         <div className="text-text-primary font-serif text-xl mt-1">{gua.fullName}</div>
         <div className="text-text-muted text-xs mt-1">
-          {gua.symbol} · {gua.wuxing}行
+          {gua.symbol} · {gua.wuxing}{t.LIUYAO_UI.wuxingSuffix}
         </div>
       </div>
 
@@ -63,18 +65,18 @@ const GuaDisplay: React.FC<GuaDisplayProps> = ({ gua, title, dongYao = [], isAct
 
       <div className="grid grid-cols-2 gap-2 text-center text-xs">
         <div className="bg-bg-primary/30 rounded p-2">
-          <div className="text-text-muted">上卦</div>
+          <div className="text-text-muted">{t.LIUYAO_UI.upperTrigram}</div>
           <div className="text-text-primary">{gua.upperTrigram}({upperWx})</div>
         </div>
         <div className="bg-bg-primary/30 rounded p-2">
-          <div className="text-text-muted">下卦</div>
+          <div className="text-text-muted">{t.LIUYAO_UI.lowerTrigram}</div>
           <div className="text-text-primary">{gua.lowerTrigram}({lowerWx})</div>
         </div>
       </div>
 
       {isActive && gua.guaci && (
         <div className="mt-3 bg-bg-primary/30 rounded-md p-3">
-          <div className="text-gold text-sm font-serif mb-1">卦辞</div>
+          <div className="text-gold text-sm font-serif mb-1">{t.LIUYAO_UI.guaCiTitle}</div>
           <div className="text-text-primary text-sm">{gua.guaci}</div>
         </div>
       )}

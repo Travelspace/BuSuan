@@ -1,6 +1,7 @@
 import React from 'react'
 import type { DayInfo, MonthData } from '../utils/calculation'
-import { WEEKDAY_NAMES, WEEKDAY_COLORS } from '../utils/constants'
+import { WEEKDAY_COLORS } from '../utils/constants'
+import { useTranslation } from '../../../i18n'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface CalendarGridProps {
@@ -18,6 +19,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   onNextMonth,
   selectedDay,
 }) => {
+  const t = useTranslation()
   const firstDayWeekday = monthData.days[0]?.weekday || 0
   const prevMonthDays: (null | DayInfo)[] = Array(firstDayWeekday).fill(null)
 
@@ -61,7 +63,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           <ChevronLeft size={20} />
         </button>
         <h3 className="text-xl font-serif text-gold">
-          {monthData.year}年{monthData.month}月
+          {t.CALENDAR_UI.monthHeaderLabel(monthData.year, monthData.month)}
         </h3>
         <button
           onClick={onNextMonth}
@@ -72,8 +74,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {WEEKDAY_NAMES.map((name, i) => (
-          <div key={name} className={`text-center text-xs font-medium ${WEEKDAY_COLORS[i]} py-1`}>
+        {t.WEEKDAY_NAMES.map((name, i) => (
+          <div key={name + i} className={`text-center text-xs font-medium ${WEEKDAY_COLORS[i]} py-1`}>
             {name}
           </div>
         ))}
@@ -103,7 +105,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
             </div>
             {day.yi.length > 0 && (
               <div className="text-wood text-[10px] mt-0.5 truncate">
-                宜{day.yi.slice(0, 2).join('·')}
+                {t.CALENDAR_UI.yiPrefix}{day.yi.slice(0, 2).join('·')}
               </div>
             )}
             {day.baziRelation && (

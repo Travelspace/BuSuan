@@ -2,6 +2,7 @@ import React from 'react'
 import { Card } from '../../../components/common'
 import { getWuXingBg } from '../utils/constants'
 import { GAN_WUXING } from '../../../utils/wuxing'
+import { useTranslation } from '../../../i18n'
 import type { TenGodRelation, TianGan, WuXing } from '../../../types'
 
 interface TenGodsProps {
@@ -15,22 +16,23 @@ interface TenGodsProps {
 }
 
 const TenGods: React.FC<TenGodsProps> = ({ tenGods, hiddenStems }) => {
-  const positions = ['年柱', '月柱', '日柱', '时柱']
+  const t = useTranslation()
+  const positions = [t.BAZI_UI.yearPillar, t.BAZI_UI.monthPillar, t.BAZI_UI.dayPillar, t.BAZI_UI.hourPillar]
   const stemKeys = ['year', 'month', 'day', 'hour'] as const
 
   return (
     <Card hover={false}>
-      <h3 className="text-xl font-serif text-gold mb-6">十神与藏干</h3>
-      
+      <h3 className="text-xl font-serif text-gold mb-6">{t.BAZI_UI.tenGodsTitle}</h3>
+
       <div className="overflow-x-auto">
         <table className="w-full text-center">
           <thead>
             <tr className="border-b border-gold/10">
-              <th className="py-2 text-text-muted text-sm font-normal">位置</th>
-              <th className="py-2 text-text-muted text-sm font-normal">天干</th>
-              <th className="py-2 text-text-muted text-sm font-normal">十神</th>
-              <th className="py-2 text-text-muted text-sm font-normal">地支</th>
-              <th className="py-2 text-text-muted text-sm font-normal">藏干</th>
+              <th className="py-2 text-text-muted text-sm font-normal">{t.BAZI_UI.tablePosition}</th>
+              <th className="py-2 text-text-muted text-sm font-normal">{t.BAZI_UI.tableTianGan}</th>
+              <th className="py-2 text-text-muted text-sm font-normal">{t.BAZI_UI.tableTenGod}</th>
+              <th className="py-2 text-text-muted text-sm font-normal">{t.BAZI_UI.tableDiZhi}</th>
+              <th className="py-2 text-text-muted text-sm font-normal">{t.BAZI_UI.tableHiddenStems}</th>
             </tr>
           </thead>
           <tbody>

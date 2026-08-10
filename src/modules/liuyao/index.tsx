@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useAppStore } from '../../store'
 import { calculateLiuyaoManual, calculateLiuyaoByTime } from './utils/calculation'
-import { MODULE_NAMES, MODULE_DESCRIPTIONS } from '../../utils/constants'
+import { useTranslation } from '../../i18n'
 import YaoGuaForm from './components/YaoGuaForm'
 import GuaDisplay from './components/GuaDisplay'
 import GuaInterpretation from './components/GuaInterpretation'
@@ -10,6 +10,7 @@ import type { LiuyaoResult } from '../../types'
 
 const LiuyaoModule: React.FC = () => {
   const { setLiuyaoResult } = useAppStore()
+  const t = useTranslation()
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<LiuyaoResult | null>(null)
 
@@ -41,8 +42,8 @@ const LiuyaoModule: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-serif text-gold mb-2">{MODULE_NAMES.liuyao}</h2>
-        <p className="text-text-secondary">{MODULE_DESCRIPTIONS.liuyao}</p>
+        <h2 className="text-3xl font-serif text-gold mb-2">{t.MODULE_NAMES.liuyao}</h2>
+        <p className="text-text-secondary">{t.MODULE_DESCRIPTIONS.liuyao}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -59,21 +60,21 @@ const LiuyaoModule: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <GuaDisplay
                 gua={result.benGua}
-                title="本卦"
+                title={t.LIUYAO_UI.benGua}
                 dongYao={result.dongYao}
                 isActive={true}
               />
               {result.huGua && (
                 <GuaDisplay
                   gua={result.huGua}
-                  title="互卦"
+                  title={t.LIUYAO_UI.huGua}
                   isActive={false}
                 />
               )}
               {result.bianGua && (
                 <GuaDisplay
                   gua={result.bianGua}
-                  title="变卦"
+                  title={t.LIUYAO_UI.bianGua}
                   isActive={true}
                 />
               )}
@@ -89,8 +90,8 @@ const LiuyaoModule: React.FC = () => {
           <div className="lg:col-span-2 flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <div className="text-6xl mb-4 opacity-20">卦</div>
-              <p className="text-text-muted text-lg">请选择起卦方式开始占卜</p>
-              <p className="text-text-secondary text-sm mt-2">支持手动摇卦和时间起卦</p>
+              <p className="text-text-muted text-lg">{t.LIUYAO_UI.emptyTitle}</p>
+              <p className="text-text-secondary text-sm mt-2">{t.LIUYAO_UI.emptyHint}</p>
             </div>
           </div>
         )}
