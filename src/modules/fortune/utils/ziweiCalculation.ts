@@ -1,5 +1,6 @@
 import type { BirthInfo } from '../../../types'
 import type { ZiweiPalaceData, ZiweiCalcResult } from '../../ziwei/utils/calculation'
+import { getScoreLevel, type FortuneLevel } from './constants'
 
 export interface PalaceFortune {
   name: string
@@ -16,7 +17,7 @@ export interface PalaceFortune {
     earthlyBranch: string
   }
   score: number
-  level: '大吉' | '吉' | '平' | '凶' | '大凶'
+  level: FortuneLevel
   analysis: string
   advice: string
 }
@@ -43,7 +44,7 @@ export interface ZiweiFortuneResult {
   } | null
   currentAge: number
   overallScore: number
-  overallLevel: '大吉' | '吉' | '平' | '凶' | '大凶'
+  overallLevel: FortuneLevel
 }
 
 const PALACE_DOMAIN: Record<string, { domain: string; icon: string; weight: number }> = {
@@ -70,21 +71,6 @@ const STAR_SCORES: Record<string, number> = {
 
 const SIHUA_SCORE_ADJUST: Record<string, number> = {
   '禄': 15, '权': 10, '科': 8, '忌': -18,
-}
-
-const LEVEL_RANGES: { min: number; max: number; level: PalaceFortune['level'] }[] = [
-  { min: 80, max: 100, level: '大吉' },
-  { min: 65, max: 79, level: '吉' },
-  { min: 45, max: 64, level: '平' },
-  { min: 30, max: 44, level: '凶' },
-  { min: 0, max: 29, level: '大凶' },
-]
-
-function getLevel(score: number): PalaceFortune['level'] {
-  for (const r of LEVEL_RANGES) {
-    if (score >= r.min && score <= r.max) return r.level
-  }
-  return '平'
 }
 
 function calculatePalaceScore(palace: ZiweiPalaceData): number {
@@ -195,7 +181,7 @@ export function calculateZiweiFortune(
 
   const palaceFortunes: PalaceFortune[] = palaces.map(p => {
     const score = calculatePalaceScore(p)
-    const level = getLevel(score)
+    const level = getScoreLevel(score)
     const { analysis, advice } = generatePalaceAnalysis(p.name, p.majorStars, p.sihua, score, level)
     return {
       name: p.name,
@@ -235,6 +221,6 @@ export function calculateZiweiFortune(
     currentDecadal,
     currentAge,
     overallScore,
-    overallLevel: getLevel(overallScore),
+    overallLevel: getScoreLevel(overallScore),
   }
 }

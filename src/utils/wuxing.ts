@@ -1,4 +1,4 @@
-import type { WuXing, TianGan, DiZhi } from '../types'
+import type { WuXing, TianGan, DiZhi, TenGod } from '../types'
 
 export const GAN_WUXING: Record<TianGan, WuXing> = {
   '甲': '木', '乙': '木',
@@ -51,4 +51,34 @@ export function getKeWo(wx: WuXing): WuXing {
   const entries = Object.entries(WU_XING_KE) as [WuXing, WuXing][]
   const found = entries.find(([, child]) => child === wx)
   return found ? found[0] : wx
+}
+
+/**
+ * 十神推导：以日干为基准，判定目标天干对应的十神
+ * 同干为比肩；同五行同阴阳为比肩、同五行异阴阳为劫财；
+ * 日干生目标为食神/伤官，日干克目标为偏财/正财，
+ * 目标生日干为偏印/正印，目标克日干为七杀/正官（按阴阳异同区分）
+ */
+export function getTenGodByGan(dayGan: TianGan, targetGan: TianGan): TenGod {
+  if (dayGan === targetGan) return '比肩'
+
+  const dayYinYang = '甲丙戊庚壬'.includes(dayGan)
+  const targetYinYang = '甲丙戊庚壬'.includes(targetGan)
+  const isSameYinYang = dayYinYang === targetYinYang
+
+  const dayWx = GAN_WUXING[dayGan]
+  const targetWx = GAN_WUXING[targetGan]
+
+  if (WU_XING_SHENG[dayWx] === targetWx) return isSameYinYang ? '食神' : '伤官'
+  if (WU_XING_KE[dayWx] === targetWx) return isSameYinYang ? '偏财' : '正财'
+  if (WU_XING_SHENG[targetWx] === dayWx) return isSameYinYang ? '偏印' : '正印'
+  if (WU_XING_KE[targetWx] === dayWx) return isSameYinYang ? '七杀' : '正官'
+
+  return isSameYinYang ? '比肩' : '劫财'
+}
+
+/** 八卦→五行：乾/兑金、震/巽木、坎水、离火、坤/艮土 */
+export const TRIGRAM_WUXING: Record<string, WuXing> = {
+  '乾': '金', '坤': '土', '震': '木', '巽': '木',
+  '坎': '水', '离': '火', '艮': '土', '兑': '金',
 }

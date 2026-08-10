@@ -1,2 +1,0 @@
-const r={甲:"木",乙:"木",丙:"火",丁:"火",戊:"土",己:"土",庚:"金",辛:"金",壬:"水",癸:"水"},i={子:"水",丑:"土",寅:"木",卯:"木",辰:"土",巳:"火",午:"火",未:"土",申:"金",酉:"金",戌:"土",亥:"水"},o={金:"水",水:"木",木:"火",火:"土",土:"金"},c={金:"木",木:"土",土:"水",水:"火",火:"金"};function a(n){const t=Object.entries(o).find(([,e])=>e===n);return t?t[0]:n}function G(n){const t=Object.entries(c).find(([,e])=>e===n);return t?t[0]:n}export{r as G,o as W,i as Z,c as a,G as b,a as g};
-//# sourceMappingURL=wuxing-CatYyPhG.js.map

@@ -2,11 +2,10 @@ import React, { useState, useCallback } from 'react'
 import { useAppStore } from '../../store'
 import { calculateZiwei, type ZiweiCalcResult, type ZiweiPalaceData } from './utils/calculation'
 import { useTranslation } from '../../i18n'
-import ZiweiBirthForm from './components/ZiweiBirthForm'
+import { BirthSummaryForm, Card } from '../../components/common'
 import ZiweiChart from './components/ZiweiChart'
 import PalaceDetail from './components/PalaceDetail'
 import SihuaDisplay from './components/SihuaDisplay'
-import { Card } from '../../components/common'
 import type { BirthInfo } from '../../types'
 
 const ZiweiModule: React.FC = () => {
@@ -39,7 +38,12 @@ const ZiweiModule: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
-          <ZiweiBirthForm onSubmit={handleSubmit} loading={loading} />
+          <BirthSummaryForm
+            onSubmit={handleSubmit}
+            loading={loading}
+            ganZhiLabel={t.ZIWEI_UI.ganZhiLabel}
+            submitLabel={t.ZIWEI_UI.chartTitle}
+          />
         </div>
 
         {result && (

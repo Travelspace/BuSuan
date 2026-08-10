@@ -4,7 +4,6 @@ import type {
   Pillar,
   HiddenStem,
   TenGodRelation,
-  TenGod,
   Dayun,
   Liunian,
   WuXing,
@@ -13,7 +12,7 @@ import type {
   Gender,
   BirthInfo
 } from '../../../types'
-import { GAN_WUXING, ZHI_WUXING, WU_XING_SHENG, WU_XING_KE, getShengWo, getKeWo } from '../../../utils/wuxing'
+import { GAN_WUXING, ZHI_WUXING, getShengWo, getKeWo, getTenGodByGan } from '../../../utils/wuxing'
 import { getCorrectedSolarTime } from '../../../utils/trueSolarTime'
 
 const HIDE_GAN_TYPE: Record<number, ('本气' | '中气' | '余气')[]> = {
@@ -61,24 +60,6 @@ function countFiveElements(eightChar: EightChar): Record<WuXing, number> {
   })
   
   return counts
-}
-
-function getTenGod(dayGan: TianGan, targetGan: TianGan): TenGod {
-  if (dayGan === targetGan) return '比肩'
-
-  const dayYinYang = '甲丙戊庚壬'.includes(dayGan)
-  const targetYinYang = '甲丙戊庚壬'.includes(targetGan)
-  const isSameYinYang = dayYinYang === targetYinYang
-
-  const dayWx = GAN_WUXING[dayGan]
-  const targetWx = GAN_WUXING[targetGan]
-
-  if (WU_XING_SHENG[dayWx] === targetWx) return isSameYinYang ? '食神' : '伤官'
-  if (WU_XING_KE[dayWx] === targetWx) return isSameYinYang ? '偏财' : '正财'
-  if (WU_XING_SHENG[targetWx] === dayWx) return isSameYinYang ? '偏印' : '正印'
-  if (WU_XING_KE[targetWx] === dayWx) return isSameYinYang ? '七杀' : '正官'
-
-  return isSameYinYang ? '比肩' : '劫财'
 }
 
 function getHiddenStems(hideGans: string[]): HiddenStem[] {
@@ -164,10 +145,10 @@ export function calculateBazi(birthInfo: BirthInfo): BaziResult | null {
   const dayGan = eightChar.getDayGan() as TianGan
 
   const tenGods: TenGodRelation[] = [
-    { position: '年干', tianGan: eightChar.getYearGan() as TianGan, tenGod: getTenGod(dayGan, eightChar.getYearGan() as TianGan) },
-    { position: '月干', tianGan: eightChar.getMonthGan() as TianGan, tenGod: getTenGod(dayGan, eightChar.getMonthGan() as TianGan) },
+    { position: '年干', tianGan: eightChar.getYearGan() as TianGan, tenGod: getTenGodByGan(dayGan, eightChar.getYearGan() as TianGan) },
+    { position: '月干', tianGan: eightChar.getMonthGan() as TianGan, tenGod: getTenGodByGan(dayGan, eightChar.getMonthGan() as TianGan) },
     { position: '日干', tianGan: dayGan, tenGod: '日主' },
-    { position: '时干', tianGan: eightChar.getTimeGan() as TianGan, tenGod: getTenGod(dayGan, eightChar.getTimeGan() as TianGan) },
+    { position: '时干', tianGan: eightChar.getTimeGan() as TianGan, tenGod: getTenGodByGan(dayGan, eightChar.getTimeGan() as TianGan) },
   ]
   
   const fiveElements = countFiveElements(eightChar)
@@ -195,7 +176,7 @@ export function calculateBazi(birthInfo: BirthInfo): BaziResult | null {
     endAge: dy.getEndAge(),
     tianGan: dy.getGanZhi()[0] as TianGan,
     diZhi: dy.getGanZhi()[1] as DiZhi,
-    tenGod: getTenGod(dayGan, dy.getGanZhi()[0] as TianGan),
+    tenGod: getTenGodByGan(dayGan, dy.getGanZhi()[0] as TianGan),
   }))
   
   const currentYear = new Date().getFullYear()
@@ -210,7 +191,7 @@ export function calculateBazi(birthInfo: BirthInfo): BaziResult | null {
       year: y,
       tianGan: liunianGan,
       diZhi: ec.getYearZhi() as DiZhi,
-      tenGod: getTenGod(dayGan, liunianGan),
+      tenGod: getTenGodByGan(dayGan, liunianGan),
     })
   }
   
@@ -259,30 +240,3 @@ export function getJieQi(year: number, month: number, day: number): string {
   return jieQi || ''
 }
 
-export function dateToBazi(
-  dateStr: string,
-  calendar: 'solar' | 'lunar' = 'solar',
-  longitude?: number,
-  timezone?: string,
-): string {
-  if (!dateStr) return ''
-
-  // 真太阳时校正
-  const corrected = getCorrectedSolarTime(dateStr, calendar, longitude, timezone)
-  const { year, month, day, hour, minute } = corrected
-
-  const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0)
-  const lunar = solar.getLunar()
-  const eightChar = lunar.getEightChar()
-
-  const yearGan = eightChar.getYearGan()
-  const yearZhi = eightChar.getYearZhi()
-  const monthGan = eightChar.getMonthGan()
-  const monthZhi = eightChar.getMonthZhi()
-  const dayGan = eightChar.getDayGan()
-  const dayZhi = eightChar.getDayZhi()
-  const hourGan = eightChar.getTimeGan()
-  const hourZhi = eightChar.getTimeZhi()
-
-  return `${yearGan}${yearZhi}年 ${monthGan}${monthZhi}月 ${dayGan}${dayZhi}日 ${hourGan}${hourZhi}时`
-}

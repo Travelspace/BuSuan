@@ -9,12 +9,13 @@
 import type { GeInfo, WuXing } from '../../../types'
 import type { WugeReference } from './types'
 import { getStrokeCount } from './strokeLookup'
-import { NUM_WUXING, GE_MEANINGS, SANCAI_RELATIONS } from './constants'
+import { NUM_WUXING } from './constants'
+import { SANCAI_RELATIONS, GE_MEANINGS } from '../../../locales/zh-CN'
 
 /** 笔画→五行（尾数法） */
 function getStrokesWuXing(strokes: number): WuXing {
   const remainder = strokes % 10
-  return NUM_WUXING[remainder === 0 ? 10 : remainder]
+  return NUM_WUXING[remainder]
 }
 
 /** 构造格信息 */

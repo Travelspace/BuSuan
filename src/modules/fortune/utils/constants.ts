@@ -1,2 +1,3 @@
 export { LEVEL_COLORS, LEVEL_SCORE } from '../../../utils/jixiong'
-export { FORTUNE_DIMENSIONS as DIMENSION_LABELS, FORTUNE_DIMENSION_ICONS as DIMENSION_ICONS, FORTUNE_TREND as TREND_LABELS } from '../../../locales/zh-CN'
+export type { FortuneLevel } from '../../../utils/jixiong'
+export { getScoreLevel } from '../../../utils/jixiong'

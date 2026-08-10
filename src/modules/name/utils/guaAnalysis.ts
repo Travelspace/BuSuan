@@ -18,28 +18,10 @@ import type { WuXing } from '../../../types'
 import type { GuaAnalysis, TiYongRelation } from './types'
 import { getStrokeCount } from './strokeLookup'
 import { GUA_INTERPRETATION } from '../data/guaInterpretation'
+import { TRIGRAM_WUXING, WU_XING_SHENG, WU_XING_KE } from '../../../utils/wuxing'
 
 /** 八卦序号→卦名 */
 const GUA_NAMES = ['乾', '兑', '离', '震', '巽', '坎', '艮', '坤'] as const
-
-/** 八卦五行 */
-const GUA_WUXING: Record<string, WuXing> = {
-  '乾': '金', '兑': '金',
-  '震': '木', '巽': '木',
-  '坎': '水',
-  '离': '火',
-  '坤': '土', '艮': '土',
-}
-
-/** 五行相生：生者→被生者 */
-const SHENG: Record<WuXing, WuXing> = {
-  '金': '水', '水': '木', '木': '火', '火': '土', '土': '金',
-}
-
-/** 五行相克：克者→被克者 */
-const KE: Record<WuXing, WuXing> = {
-  '金': '木', '木': '土', '土': '水', '水': '火', '火': '金',
-}
 
 /** 笔画数转八卦序号（1-8，余0取8即坤） */
 function strokesToGuaIndex(strokes: number): number {
@@ -52,16 +34,16 @@ function getTiYong(tiWx: WuXing, yongWx: WuXing): { relation: TiYongRelation; de
   if (tiWx === yongWx) {
     return { relation: '比和', desc: '体用同五行，比和相助，势均力敌' }
   }
-  if (SHENG[yongWx] === tiWx) {
+  if (WU_XING_SHENG[yongWx] === tiWx) {
     return { relation: '用生体', desc: '用卦生体卦，有扶助之恩，谋事可成' }
   }
-  if (SHENG[tiWx] === yongWx) {
+  if (WU_XING_SHENG[tiWx] === yongWx) {
     return { relation: '体生用', desc: '体卦生用卦，泄气之象，劳而少得' }
   }
-  if (KE[tiWx] === yongWx) {
+  if (WU_XING_KE[tiWx] === yongWx) {
     return { relation: '体克用', desc: '体卦克用卦，我制于物，事半功倍' }
   }
-  // KE[yongWx] === tiWx
+  // WU_XING_KE[yongWx] === tiWx
   return { relation: '用克体', desc: '用卦克体卦，受制于人，谋事多艰' }
 }
 
@@ -101,8 +83,8 @@ export function calculateGua(surname: string, givenName: string): GuaAnalysis {
   const lowerGua = GUA_NAMES[lowerIdx - 1]
 
   // 体用关系（体=上卦，用=下卦）
-  const tiWx = GUA_WUXING[upperGua]
-  const yongWx = GUA_WUXING[lowerGua]
+  const tiWx = TRIGRAM_WUXING[upperGua]
+  const yongWx = TRIGRAM_WUXING[lowerGua]
   const { relation, desc } = getTiYong(tiWx, yongWx)
 
   // 卦名/卦辞

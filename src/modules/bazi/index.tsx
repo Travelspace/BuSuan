@@ -3,7 +3,7 @@ import { useAppStore } from '../../store'
 import { calculateBazi } from './utils/calculation'
 import { useTranslation } from '../../i18n'
 import { getAge } from '../../utils/date'
-import BirthForm from './components/BirthForm'
+import { BirthSummaryForm } from '../../components/common'
 import FourPillars from './components/FourPillars'
 import TenGods from './components/TenGods'
 import FiveElements from './components/FiveElements'
@@ -36,7 +36,12 @@ const BaziModule: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
-          <BirthForm onSubmit={handleSubmit} loading={loading} />
+          <BirthSummaryForm
+            onSubmit={handleSubmit}
+            loading={loading}
+            ganZhiLabel={t.BAZI_UI.fourPillarsTitle}
+            submitLabel={t.BAZI_UI.startCalc}
+          />
         </div>
 
         {result && (

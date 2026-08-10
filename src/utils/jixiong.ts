@@ -18,3 +18,15 @@ export const LEVEL_SCORE: Record<string, number> = {
   '凶': 2,
   '大凶': 1,
 }
+
+/** 运势/宫位等级（fortune 模块共用） */
+export type FortuneLevel = '大吉' | '吉' | '平' | '凶' | '大凶'
+
+/** 分数→等级：80+ 大吉、65+ 吉、45+ 平、30+ 凶、其余大凶 */
+export function getScoreLevel(score: number): FortuneLevel {
+  if (score >= 80) return '大吉'
+  if (score >= 65) return '吉'
+  if (score >= 45) return '平'
+  if (score >= 30) return '凶'
+  return '大凶'
+}

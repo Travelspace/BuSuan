@@ -1,23 +1,14 @@
-import type { LiuyaoResult, GuaInfo, YaoInfo } from '../../../types'
+import type { LiuyaoResult, GuaInfo, YaoInfo, WuXing } from '../../../types'
 import { TRIGRAM_DATA, getGuaKey, getGuaByKey, type GuaData } from '../data/guaData'
-import { TRIGRAM_WUXING } from './constants'
-import { WU_XING_SHENG, WU_XING_KE } from '../../../utils/wuxing'
-
-function getWuXingRelation(from: string, to: string): '生' | '克' | '比和' | '被生' | '被克' {
-  if (from === to) return '比和'
-  if (WU_XING_SHENG[from as keyof typeof WU_XING_SHENG] === to) return '生'
-  if (WU_XING_KE[from as keyof typeof WU_XING_KE] === to) return '克'
-  if (WU_XING_SHENG[to as keyof typeof WU_XING_SHENG] === from) return '被生'
-  if (WU_XING_KE[to as keyof typeof WU_XING_KE] === from) return '被克'
-  return '比和'
-}
+import { TRIGRAM_WUXING, wuXingRelation } from '../../../utils/wuxing'
+import { getTimeIndex } from '../../../utils/date'
 
 function yaosToGuaInfo(yaos: YaoInfo[], guaData: GuaData | undefined): GuaInfo {
   const lowerYao = yaos.slice(0, 3).map(y => y.type === '阳' ? 1 : 0)
   const upperYao = yaos.slice(3, 6).map(y => y.type === '阳' ? 1 : 0)
 
-  const lowerKey = lowerYao.join('').replace(/0/g, '0').replace(/1/g, '1')
-  const upperKey = upperYao.join('').replace(/0/g, '0').replace(/1/g, '1')
+  const lowerKey = lowerYao.join('')
+  const upperKey = upperYao.join('')
 
   const lowerTri = TRIGRAM_DATA[lowerKey]
   const upperTri = TRIGRAM_DATA[upperKey]
@@ -123,18 +114,10 @@ function analyzeTiYong(benGua: GuaInfo, dongYao: number[]): LiuyaoResult['tiYong
 
   const tiWx = TRIGRAM_WUXING[tiGuaName] || '土'
   const yongWx = TRIGRAM_WUXING[yongGuaName] || '土'
-  const relation = getWuXingRelation(tiWx, yongWx)
+  const relation = wuXingRelation(tiWx as WuXing, yongWx as WuXing)
 
-  let isGood = false
-  if (relation === '比和' || relation === '被生') {
-    isGood = true
-  } else if (relation === '生') {
-    isGood = true
-  } else if (relation === '克') {
-    isGood = true
-  } else {
-    isGood = false
-  }
+  // 除「用克体」外均视为吉利（比和/被生/生/克）
+  const isGood = relation !== '被克'
 
   return {
     tiGua: tiGuaName,
@@ -224,8 +207,9 @@ export function calculateLiuyaoByTime(question?: string): LiuyaoResult | null {
   const month = now.getMonth() + 1
   const day = now.getDate()
   const hour = now.getHours()
+  const minute = now.getMinutes()
 
-  const zhiIndex = Math.floor((hour + 1) / 2) % 12
+  const zhiIndex = getTimeIndex(hour, minute) % 12
   const yearZhi = ((year - 4) % 12) + 1
 
   const upperNum = (yearZhi + month + day) % 8

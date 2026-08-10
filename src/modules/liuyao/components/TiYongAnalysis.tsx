@@ -2,7 +2,7 @@ import React from 'react'
 import { Card } from '../../../components/common'
 import { useTranslation } from '../../../i18n'
 import type { LiuyaoResult } from '../../../types'
-import { TRIGRAM_WUXING } from '../utils/constants'
+import { TRIGRAM_WUXING } from '../../../utils/wuxing'
 
 interface TiYongAnalysisProps {
   result: LiuyaoResult

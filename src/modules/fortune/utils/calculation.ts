@@ -1,8 +1,8 @@
-import { Solar } from 'lunar-typescript'
 import type { TianGan, WuXing, BirthInfo, BaziResult, TenGod } from '../../../types'
 import { getAge } from '../../../utils/date'
-import { GAN_WUXING, WU_XING_SHENG, WU_XING_KE } from '../../../utils/wuxing'
+import { GAN_WUXING } from '../../../utils/wuxing'
 import { FORTUNE_TEN_GOD, FORTUNE_LEVEL_TEXT, FORTUNE_KEY_REASON } from '../../../locales/zh-CN'
+import { getScoreLevel, type FortuneLevel } from './constants'
 
 export interface YearFortune {
   year: number
@@ -12,7 +12,7 @@ export interface YearFortune {
   tenGod: TenGod
   wuXing: WuXing
   score: number
-  level: '大吉' | '吉' | '平' | '凶' | '大凶'
+  level: FortuneLevel
   tags: string[]
   summary: string
   career: string
@@ -33,58 +33,12 @@ export interface FortuneResult {
   keyYears: number[]
 }
 
-const LEVEL_RANGES: { min: number; max: number; level: YearFortune['level'] }[] = [
-  { min: 80, max: 100, level: '大吉' },
-  { min: 65, max: 79, level: '吉' },
-  { min: 45, max: 64, level: '平' },
-  { min: 30, max: 44, level: '凶' },
-  { min: 0, max: 29, level: '大凶' },
-]
-
-function getLevel(score: number): YearFortune['level'] {
-  for (const r of LEVEL_RANGES) {
-    if (score >= r.min && score <= r.max) return r.level
-  }
-  return '平'
-}
-
-function getTenGod(dayGan: TianGan, targetGan: TianGan): TenGod {
-  if (dayGan === targetGan) return '日主'
-
-  const dayWx = GAN_WUXING[dayGan]
-  const targetWx = GAN_WUXING[targetGan]
-  const isSameWx = dayWx === targetWx
-
-  const dayYang = '甲丙戊庚壬'.includes(dayGan)
-  const targetYang = '甲丙戊庚壬'.includes(targetGan)
-  const isSameYinYang = dayYang === targetYang
-
-  if (WU_XING_SHENG[dayWx] === targetWx) {
-    return isSameYinYang ? '食神' : '伤官'
-  }
-  if (WU_XING_KE[dayWx] === targetWx) {
-    return isSameYinYang ? '偏财' : '正财'
-  }
-  if (WU_XING_SHENG[targetWx] === dayWx) {
-    return isSameYinYang ? '偏印' : '正印'
-  }
-  if (WU_XING_KE[targetWx] === dayWx) {
-    return isSameYinYang ? '七杀' : '正官'
-  }
-  if (isSameWx) {
-    return isSameYinYang ? '比肩' : '劫财'
-  }
-
-  return '日主'
-}
-
 function calculateScore(
-  dayGan: TianGan,
+  tenGod: TenGod,
   yearGan: TianGan,
   xiYongShen?: BaziResult['xiYongShen'],
   dayunGanZhi?: string
 ): number {
-  const tenGod = getTenGod(dayGan, yearGan)
   let baseScore = FORTUNE_TEN_GOD[tenGod]?.score ?? 50
 
   if (xiYongShen) {
@@ -127,20 +81,13 @@ function generateFortuneDetail(
 export function calculateFortune(birthInfo: BirthInfo, baziResult: BaziResult): FortuneResult | null {
   if (!birthInfo.date) return null
 
-  const currentYear = new Date().getFullYear()
-  const dayGan = baziResult.dayMaster
   const fortunes: YearFortune[] = []
 
-  for (let i = 0; i < 10; i++) {
-    const year = currentYear + i
-    const solar = Solar.fromYmd(year, 1, 1)
-    const lunar = solar.getLunar()
-    const eightChar = lunar.getEightChar()
-
-    const yearGan = eightChar.getYearGan() as TianGan
-    const yearZhi = eightChar.getYearZhi()
-    const ganZhi = yearGan + yearZhi
-    const tenGod = getTenGod(dayGan, yearGan)
+  // 流年干支复用 baziResult.liunian（已按当年起算 10 年）
+  for (let i = 0; i < baziResult.liunian.length; i++) {
+    const { year, tianGan, diZhi, tenGod } = baziResult.liunian[i]
+    const yearGan = tianGan
+    const ganZhi = tianGan + diZhi
 
     const age = getAge(new Date(birthInfo.date))
     const currentDayun = baziResult.dayun.find(
@@ -150,8 +97,8 @@ export function calculateFortune(birthInfo: BirthInfo, baziResult: BaziResult): 
       ? currentDayun.tianGan + currentDayun.diZhi
       : undefined
 
-    const score = calculateScore(dayGan, yearGan, baziResult.xiYongShen, dayunGanZhi)
-    const level = getLevel(score)
+    const score = calculateScore(tenGod, yearGan, baziResult.xiYongShen, dayunGanZhi)
+    const level = getScoreLevel(score)
     const detail = generateFortuneDetail(tenGod, level)
 
     const isKeyYear = score >= 80 || score <= 35 || i === 0
@@ -164,7 +111,7 @@ export function calculateFortune(birthInfo: BirthInfo, baziResult: BaziResult): 
       year,
       ganZhi,
       tianGan: yearGan,
-      diZhi: yearZhi,
+      diZhi,
       wuXing: GAN_WUXING[yearGan],
       score,
       level,
