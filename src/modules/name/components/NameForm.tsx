@@ -1,44 +1,36 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Button, Card } from '../../../components/common'
 import { getStrokeCount } from '../utils/strokeLookup'
 import { useTranslation } from '../../../i18n'
 
 interface NameFormProps {
-  onSubmit: (name: string) => void
-  loading: boolean
+  /** 来自个人信息页面的姓名 */
+  name: string
+  onSubmit: () => void
+  loading?: boolean
   hasBazi: boolean
 }
 
-const NameForm: React.FC<NameFormProps> = ({ onSubmit, loading, hasBazi }) => {
+const NameForm: React.FC<NameFormProps> = ({ name, onSubmit, loading = false, hasBazi }) => {
   const t = useTranslation()
-  const [name, setName] = useState('')
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (name.trim().length >= 2) {
-      onSubmit(name.trim())
-    }
-  }
 
   const chars = [...name]
   const charStrokes = chars.map(c => ({ char: c, stroke: getStrokeCount(c) }))
   const hasUnknownStroke = charStrokes.some(cs => cs.stroke === null)
+  const canTest = name.trim().length >= 2 && !hasUnknownStroke
 
   return (
     <Card hover={false}>
       <h3 className="text-lg font-serif text-gold mb-4">{t.NAME_UI.inputTitle}</h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
+
+      {/* 姓名展示（取自个人信息页面，不可编辑） */}
+      <div className="space-y-4">
         <div>
           <label className="block text-text-secondary text-sm mb-2">{t.NAME_UI.nameLabel}</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t.NAME_UI.namePlaceholder}
-            maxLength={4}
-            className="w-full bg-bg-primary/50 border border-gold/20 rounded-md px-4 py-2.5 text-text-primary placeholder-text-muted focus:border-gold focus:outline-none transition-colors"
-          />
-          <p className="text-text-muted text-xs mt-1">{t.NAME_UI.nameFormatHint}</p>
+          <div className="w-full bg-bg-primary/50 border border-gold/20 rounded-md px-4 py-2.5 text-text-primary text-lg font-serif">
+            {name || t.NAME_UI.nameEmptyValue}
+          </div>
+          <p className="text-text-muted text-xs mt-1">{t.NAME_UI.nameSourceHint}</p>
         </div>
 
         {chars.length > 0 && (
@@ -73,14 +65,15 @@ const NameForm: React.FC<NameFormProps> = ({ onSubmit, loading, hasBazi }) => {
         )}
 
         <Button
-          type="submit"
+          type="button"
           loading={loading}
-          disabled={name.trim().length < 2 || hasUnknownStroke}
+          disabled={!canTest}
+          onClick={onSubmit}
           className="w-full"
         >
           {t.NAME_UI.startTest}
         </Button>
-      </form>
+      </div>
     </Card>
   )
 }

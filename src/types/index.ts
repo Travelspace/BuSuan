@@ -130,42 +130,6 @@ export interface GeInfo {
   meaning: string[]
 }
 
-export interface NameResult {
-  name: string
-  surname: string
-  givenName: string
-  totalStrokes: number
-  fiveGe: {
-    tianGe: GeInfo
-    renGe: GeInfo
-    diGe: GeInfo
-    waiGe: GeInfo
-    zongGe: GeInfo
-  }
-  sanCai: {
-    tian: WuXing
-    ren: WuXing
-    di: WuXing
-    relation: string
-  }
-  score: number
-  level: 'excellent' | 'good' | 'normal' | 'poor' | 'bad'
-  evaluation: {
-    advantages: string[]
-    disadvantages: string[]
-    suggestions: string[]
-  }
-  baziMatch?: {
-    matchScore: number
-    wuxingMatch: {
-      name: WuXing[]
-      bazi: WuXing[]
-      match: boolean
-    }
-    suggestions: string[]
-  }
-}
-
 export interface YaoInfo {
   position: number
   type: '阳' | '阴'

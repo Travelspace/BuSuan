@@ -10,7 +10,7 @@ A fully functional web tool for traditional Chinese metaphysics research, intend
 - 🏮 **Bazi Chart** - Calculate the Four Pillars chart based on birth time, including Ten Gods, Five Elements, Nayin, Hidden Stems, and Luck Cycles
 - ⭐ **Zi Wei Dou Shu** - Plot the twelve-palace Zi Wei chart, including main stars, auxiliary stars, four transformations, and palace interpretations
 - 📊 **Fortune Analysis** - Dual-tab analysis combining Bazi macro trends and Zi Wei micro insights, with yearly ratings and palace details
-- ✍️ **Name Test** - Five-Grid numerology analysis, Three-Talent configuration, Bazi matching, and layered stroke lookup (predefined rules → cnchar → local database)
+- ✍️ **Name Test** - Bazi-primary with hexagram-secondary and 五格 (Wǔ Gé) as reference: layered 五行 (Wǔ Xíng) lookup, hexagram casting & body-use analysis, 喜用神 (Xǐ Yòng Shén) matching, overall score (Bazi 60% / hexagram 25% / 五格 15%)
 - 📅 **Auspicious Date Selection** - Almanac auspicious/inauspicious queries, date filtering, and personalized Bazi recommendations
 - ☯️ **Liu Yao Divination** - Manual or time-based hexagram casting, with original, mutual, and changed hexagrams plus body-use analysis
 - 🌐 **Bilingual (CN/EN)** - Full Chinese/English switching across the app; metaphysics terms keep the "Chinese (Pinyin)" form
@@ -86,10 +86,10 @@ BuSuan/
 │   │   ├── bazi/            # Bazi chart (pillars, ten gods, five elements, luck cycles)
 │   │   ├── ziwei/           # Zi Wei Dou Shu (12 palaces, palace details, four transformations)
 │   │   ├── fortune/         # Fortune analysis (Bazi trends + Zi Wei insights)
-│   │   ├── name/            # Name test (five-grid numerology, three-talent, Bazi matching)
-│   │   │   ├── components/  # NameForm, NameResult, etc.
-│   │   │   ├── data/        # kangxiStrokes.ts, zidianStrokes.ts (20,823 characters)
-│   │   │   └── utils/       # strokeLookup.ts (layered lookup), calculation.ts
+│   │   ├── name/            # Name test (Bazi-primary + hexagram-secondary + 五格 reference)
+│   │   │   ├── components/  # NameForm, NameResult, BaziMatchSection, GuaAnalysisSection, WugeReferenceSection
+│   │   │   ├── data/        # wuxingDict.ts (6773 chars 五行), guaInterpretation.ts (64 hexagrams), kangxiStrokes.ts, zidianStrokes.ts
+│   │   │   └── utils/       # wuxingLookup.ts (layered 五行 lookup), baziMatch.ts, guaAnalysis.ts, wugeCalculation.ts, scoreCalculator.ts, calculation.ts
 │   │   ├── calendar/        # Auspicious date selection (almanac, date filtering, Bazi combo)
 │   │   └── liuyao/          # Liu Yao divination (manual/time casting, 64 hexagrams data)
 │   ├── store/               # Zustand state management
@@ -124,15 +124,19 @@ BuSuan/
 
 ## 🔧 Key Technical Implementations
 
-### Name Test - Layered Stroke Lookup
+### Name Test - Bazi-Primary with Hexagram-Secondary
 
-The stroke lookup uses a layered fallback strategy to ensure Chinese character coverage:
+The name analysis core follows "Bazi-primary, hexagram-secondary", with 五格 (Wǔ Gé) demoted to reference info:
 
-1. **Predefined rules** - Specific radicals (阝=2, 辶=3, 氵=3, etc.) and Kangxi strokes for numeric characters
-2. **cnchar library** - Call cnchar.stroke() to get stroke count
-3. **Local database** - 20,823 Chinese character stroke records based on ZiDian.mdb
-4. **Kangxi dictionary data** - Fallback for commonly used characters
-5. **Final fallback** - Return 1 stroke if all lookups fail
+1. **Layered 五行 (Wǔ Xíng) lookup** (`wuxingLookup.ts`) - four-tier fallback for coverage:
+   - Special strong rules (品字 structure: 鑫→金, 森→木, 淼→水, 焱→火, 垚→土)
+   - Local dictionary (`wuxingDict.ts`, 6773 characters of 五行 data)
+   - Radical inference + `kangxiStrokes` supplementary dictionary
+   - Stroke-tail fallback (1/2→木, 3/4→火, 5/6→土, 7/8→金, 9/0→水)
+2. **Hexagram casting** (`guaAnalysis.ts`) - cast via Kangxi strokes: upper trigram = surname strokes % 8, lower = given-name total strokes % 8, moving line = total strokes % 6; body-use relation (用生体/体克用/比和 etc.) by 五行 generation/restriction; 64 hexagram names & texts from `guaInterpretation.ts`
+3. **Bazi matching** (`baziMatch.ts`) - reuses the `baziResult` already in store; scores per-character 五行 against 喜用神 (Xi Shen +12, Yong Shen +15, Ji Shen -10, missing-fill +5)
+4. **Overall score** (`scoreCalculator.ts`) - weight switching: with Bazi → Bazi×0.6 + hexagram×0.25 + 五格×0.15; without Bazi → hexagram×0.5 + 五格×0.5
+5. **五格 reference** (`wugeCalculation.ts`) - preserves the original five-grid numerology, three-talent config & score, shown as a collapsible reference section
 
 ### Timezone Fix
 
