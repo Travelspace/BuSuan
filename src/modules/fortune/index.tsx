@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../components/common'
 import { useAppStore } from '../../store'
@@ -28,23 +28,36 @@ const FortuneModule: React.FC = () => {
     { key: 'ziwei', label: t.FORTUNE.tabZiwei, desc: t.FORTUNE.ziweiDesc },
   ], [t])
 
+  // 前往测算：跳转到尚无结果的排盘页；八字与紫微均无结果时跳八字页
+  const handleGoCalc = useCallback(() => {
+    if (!baziResult) {
+      navigate('/bazi')
+    } else if (!ziweiResult) {
+      navigate('/ziwei')
+    }
+  }, [baziResult, ziweiResult, navigate])
+
   useEffect(() => {
     if (!birthInfo.date) return
 
     setLoading(true)
-    if (activeTab === 'bazi' && baziResult) {
-      const result = calculateFortune(birthInfo, baziResult)
-      setBaziFortune(result)
-    } else if (activeTab === 'ziwei') {
-      let ziwei = ziweiResult as ZiweiCalcResult | null
-      if (!ziwei) {
-        ziwei = calculateZiwei(birthInfo)
-        if (ziwei) setZiweiResult(ziwei as any)
+    try {
+      if (activeTab === 'bazi' && baziResult) {
+        const result = calculateFortune(birthInfo, baziResult)
+        setBaziFortune(result)
+      } else if (activeTab === 'ziwei') {
+        let ziwei = ziweiResult as ZiweiCalcResult | null
+        if (!ziwei) {
+          ziwei = calculateZiwei(birthInfo)
+          if (ziwei) setZiweiResult(ziwei as any)
+        }
+        if (ziwei) {
+          const result = calculateZiweiFortune(ziwei, birthInfo)
+          setZiweiFortune(result)
+        }
       }
-      if (ziwei) {
-        const result = calculateZiweiFortune(ziwei, birthInfo)
-        setZiweiFortune(result)
-      }
+    } finally {
+      setLoading(false)
     }
   }, [activeTab, birthInfo, baziResult, ziweiResult, setZiweiResult])
 
@@ -54,8 +67,8 @@ const FortuneModule: React.FC = () => {
         <div className="text-center">
           <div className="text-6xl mb-4 opacity-20">运</div>
           <p className="text-text-muted text-lg mb-4">{t.FORTUNE.emptyNoBirthInfo}</p>
-          <Button variant="secondary" onClick={() => navigate('/profile')}>
-            {t.FORTUNE.goFill}
+          <Button variant="secondary" onClick={handleGoCalc}>
+            {t.FORTUNE.goCalc}
           </Button>
         </div>
       </div>

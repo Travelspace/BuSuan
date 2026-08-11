@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import Button from '../Button'
 import Card from '../Card'
 import { useAppStore } from '../../../store'
@@ -19,6 +20,7 @@ interface BirthSummaryFormProps {
 const BirthSummaryForm: React.FC<BirthSummaryFormProps> = ({ onSubmit, loading = false, ganZhiLabel, submitLabel }) => {
   const { birthInfo } = useAppStore()
   const t = useTranslation()
+  const navigate = useNavigate()
 
   const hasInfo = !!birthInfo.date
 
@@ -33,7 +35,7 @@ const BirthSummaryForm: React.FC<BirthSummaryFormProps> = ({ onSubmit, loading =
       <Card hover={false}>
         <div className="text-center py-8">
           <p className="text-text-muted mb-4">{t.BAZI_UI.goFillHint}</p>
-          <Button variant="secondary" onClick={() => window.location.href = '/profile'}>
+          <Button variant="secondary" onClick={() => navigate('/profile')}>
             {t.BAZI_UI.goFill}
           </Button>
         </div>

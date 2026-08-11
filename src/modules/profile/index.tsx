@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Card, Input, useToast } from '../../components/common'
 import { useAppStore } from '../../store'
@@ -31,6 +31,23 @@ const ProfileModule: React.FC = () => {
   const [country, setCountry] = useState('')
   const [intlCity, setIntlCity] = useState('')
   const [saved, setSaved] = useState(false)
+  const dateInputRef = useRef<HTMLInputElement>(null)
+
+  /** 点击整个日期展示框（而非仅右侧日历图标）即可打开时间选择器 */
+  const handleDateBoxClick = useCallback(() => {
+    const el = dateInputRef.current
+    if (!el) return
+    const withPicker = el as HTMLInputElement & { showPicker?: () => void }
+    if (typeof withPicker.showPicker === 'function') {
+      try {
+        withPicker.showPicker()
+      } catch {
+        el.focus()
+      }
+    } else {
+      el.focus()
+    }
+  }, [])
 
   useEffect(() => {
     if (birthInfo.timezone && birthInfo.timezone !== CHINA_TIMEZONE_VALUE) {
@@ -210,13 +227,19 @@ const ProfileModule: React.FC = () => {
                   ({calendar === 'solar' ? t.PROFILE_UI.solar : t.PROFILE_UI.lunar})
                 </span>
               </label>
-              <input
-                type="datetime-local"
-                value={dateStr}
-                onChange={(e) => setDateStr(e.target.value)}
-                className="w-full bg-bg-secondary/50 border border-white/10 rounded-button px-4 py-2 text-text-primary focus:border-gold focus:outline-none transition-all duration-300"
-                required
-              />
+              <div
+                onClick={handleDateBoxClick}
+                className="relative cursor-pointer"
+              >
+                <input
+                  ref={dateInputRef}
+                  type="datetime-local"
+                  value={dateStr}
+                  onChange={(e) => setDateStr(e.target.value)}
+                  className="w-full bg-bg-secondary/50 border border-white/10 rounded-button px-4 py-2 text-text-primary focus:border-gold focus:outline-none transition-all duration-300 cursor-pointer"
+                  required
+                />
+              </div>
             </div>
 
             <div>

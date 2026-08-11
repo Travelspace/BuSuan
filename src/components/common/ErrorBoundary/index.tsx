@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import Button from '../Button'
 import Card from '../Card'
 import { useTranslation } from '../../../i18n'
@@ -21,6 +22,7 @@ interface ErrorFallbackProps {
 
 const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, isChunkError, onReset }) => {
   const t = useTranslation()
+  const navigate = useNavigate()
   return (
     <div className="flex items-center justify-center min-h-[400px] p-4">
       <Card hover={false} className="max-w-md w-full text-center">
@@ -45,7 +47,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, isChunkError, onRe
               {t.COMMON.refreshPage}
             </Button>
           ) : (
-            <Button onClick={() => window.location.href = '/'}>
+            <Button onClick={() => navigate('/profile')}>
               {t.COMMON.backHome}
             </Button>
           )}
