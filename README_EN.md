@@ -15,6 +15,7 @@ A fully functional web tool for traditional Chinese metaphysics research, intend
 - ☯️ **Liu Yao Divination** - Manual or time-based hexagram casting, with original, mutual, and changed hexagrams plus body-use analysis
 - 🌐 **Bilingual (CN/EN)** - Full Chinese/English switching across the app; metaphysics terms keep the "Chinese (Pinyin)" form
 - ☀️ **True Solar Time Correction** - Auto-corrects true solar time from birthplace longitude and timezone, supporting global cities and daylight saving time
+- 🧭 **Interaction UX** - After calculation, the profile form auto-hides/collapses and results display full-width; when info is missing, pages show a full-page guide to jump to fill-in or casting
 
 ## 🛠️ Tech Stack
 
@@ -79,7 +80,7 @@ BuSuan/
 ├── src/
 │   ├── assets/              # Static assets
 │   ├── components/          # Common components
-│   │   ├── common/          # Button, Card, Input, Modal, Toast, etc.
+│   │   ├── common/          # Button, Card, Input, Modal, Toast, BirthSummaryForm, etc.
 │   │   └── layout/          # Header, Footer, Layout
 │   ├── modules/             # Feature modules
 │   │   ├── profile/         # Profile management (province/city data, personal info)
@@ -135,8 +136,15 @@ The name analysis core follows "Bazi-primary, hexagram-secondary", with 五格 (
    - Stroke-tail fallback (1/2→木, 3/4→火, 5/6→土, 7/8→金, 9/0→水)
 2. **Hexagram casting** (`guaAnalysis.ts`) - cast via Kangxi strokes: upper trigram = surname strokes % 8, lower = given-name total strokes % 8, moving line = total strokes % 6; body-use relation (用生体/体克用/比和 etc.) by 五行 generation/restriction; 64 hexagram names & texts from `guaInterpretation.ts`
 3. **Bazi matching** (`baziMatch.ts`) - reuses the `baziResult` already in store; scores per-character 五行 against 喜用神 (Xi Shen +12, Yong Shen +15, Ji Shen -10, missing-fill +5)
-4. **Overall score** (`scoreCalculator.ts`) - weight switching: with Bazi → Bazi×0.6 + hexagram×0.25 + 五格×0.15; without Bazi → hexagram×0.5 + 五格×0.5
+4. **Overall score** (`scoreCalculator.ts`) - Bazi×0.6 + hexagram×0.25 + 五格×0.15; **a Bazi chart must be cast before the name test** (casting is disabled without it, with a prompt guiding to the Bazi page; no fallback mode)
 5. **五格 reference** (`wugeCalculation.ts`) - preserves the original five-grid numerology, three-talent config & score, shown as a collapsible reference section
+
+### Calculation Flow UX
+
+- **Info missing** - Bazi / Zi Wei / Name / Fortune pages show a full-page empty state with 「Go to Fill / Go to Calculate」 buttons that jump to the profile or casting page
+- **After calculation** - The profile form auto-hides (Bazi / Zi Wei / Name) or collapses into a left sidebar bar (Liu Yao), results display full-width with a 「Re-calculate」 button on top
+- **Bazi prerequisite** - The name test requires a completed Bazi chart first
+- **Auto fortune analysis** - Once Bazi and Zi Wei charts are ready, the fortune page computes automatically: the Bazi side reuses cached results, the Zi Wei side auto-casts when missing
 
 ### Timezone Fix
 
@@ -168,5 +176,5 @@ GNU Affero General Public License v3.0 (AGPL-3.0)
 
 ---
 
-**Version**: v1.7.0  
-**Updated**: 2026-08-10
+**Version**: v2.0.0  
+**Updated**: 2026-08-11
