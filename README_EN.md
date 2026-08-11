@@ -166,7 +166,7 @@ This project is purely technical code intended to demonstrate the algorithmic lo
 
 This project does not provide any form of fate prediction, fortune judgment, or life guidance.
 
-The code is for learning and research purposes only. Any individual or organization shall not use it for commercial, fraudulent, or illegal activities.
+The code is for learning and research purposes only. Any individual or organization shall not use it for fraudulent, or illegal activities.
 
 The project author assumes no responsibility for any direct or indirect consequences arising from the use of this project code.
 
