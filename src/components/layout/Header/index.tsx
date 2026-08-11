@@ -13,6 +13,7 @@ import {
 import { useAppStore } from '../../../store'
 import { useTranslation } from '../../../i18n'
 import type { ModuleType } from '../../../types'
+import logoImg from '../../../../scripts/image/BuSuan-logo.png'
 
 const Header: React.FC = () => {
   const { activeModule, setActiveModule, language, setLanguage } = useAppStore()
@@ -38,9 +39,11 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center">
-              <span className="text-bg-primary font-serif text-xl font-bold">卜</span>
-            </div>
+            <img
+              src={logoImg}
+              alt="BuSuan"
+              className="w-10 h-10 rounded-full object-cover border border-gold/30"
+            />
             <div>
               <h1 className="text-xl font-serif text-gold">BuSuan</h1>
               <p className="text-xs text-text-muted">传统命理研究工具</p>
