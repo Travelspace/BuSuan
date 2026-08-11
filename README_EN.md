@@ -172,7 +172,7 @@ The project author assumes no responsibility for any direct or indirect conseque
 
 ## 📄 License
 
-GNU Affero General Public License v3.0 (AGPL-3.0)
+MIT
 
 ---
 
